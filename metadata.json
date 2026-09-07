@@ -1,0 +1,6 @@
+{
+  "name": "NutriGrow",
+  "description": "Plataforma web de nutrición, recetas inteligentes, proyectos de bienestar y seguimiento personalizado con diseño moderno y elegante.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
