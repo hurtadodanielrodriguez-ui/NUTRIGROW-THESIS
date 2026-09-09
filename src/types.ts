@@ -44,6 +44,8 @@ export interface ChatMessage {
   sender: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  imageUrl?: string;
+  fileName?: string;
   actions?: AiActionData[];
   actionApplied?: { [key: number]: boolean };
 }
@@ -66,6 +68,8 @@ export interface PersonalizedPlan {
   recommendations: string[];
   calculatedAt: string;
 }
+
+export type AppLanguage = 'es' | 'en' | 'fr';
 
 export interface UserProfile {
   id: string;
@@ -98,6 +102,11 @@ export interface UserProfile {
   joinedDate: string;
   notificationsEnabled: boolean;
   theme: 'light' | 'dark';
+  language?: AppLanguage;
+  dietaryPreferences?: string[];
+  allergies?: string[];
+  microgreensHarvestedCount?: number;
+  chlorophyllGramsEstimated?: number;
 }
 
 export type RecipeCategory = 

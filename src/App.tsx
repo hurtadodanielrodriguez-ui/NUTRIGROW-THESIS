@@ -118,7 +118,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen relative transition-colors duration-300 ${isDark ? 'dark bg-[#0D1912] text-[#E2EBE5]' : 'bg-[#F6F4EE] text-[#1A2E22]'}`}>
-      {/* Dynamic Cursor-following Botanical Canvas Background */}
+      {/* Dynamic Cursor-following Natural Canvas Background */}
       <InteractiveBackground isDark={isDark} />
 
       {/* VIEW 1: LANDING PAGE */}

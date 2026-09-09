@@ -3,7 +3,7 @@ import {
   Home, User, UtensilsCrossed, Sprout, Settings, 
   ChevronDown, Sun, Moon, LogOut, Sparkles, Coffee, 
   Salad, MoonStar, Apple, GlassWater, Calculator,
-  Sliders, Shield, Bell, Check
+  Sliders, Shield, Bell, Check, Menu, X, ChevronRight
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { ViewMode, RecipeCategory, UserProfile } from '../types';
@@ -27,6 +27,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [recipesDropdownOpen, setRecipesDropdownOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [mobileRecipesOpen, setMobileRecipesOpen] = useState(false);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Close dropdown on outside click
@@ -57,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     {
       id: 'todos' as RecipeCategory,
       title: 'Todos los Platillos',
-      description: 'Explora toda la colección botánica viva',
+      description: 'Explora toda la colección vegetal viva',
       icon: UtensilsCrossed,
       color: '#0E5C36'
     },
@@ -107,7 +109,297 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-md transition-colors duration-300 border-b border-emerald-900/10 dark:border-[#70B873]/20 bg-[#F6F4EE]/90 dark:bg-[#0D1912]/90 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      {/* 1. MOBILE HEADER BAR (Strictly for mobile screens: 3 stripes on left, NutriGrow in center, user photo on right) */}
+      <div className="flex md:hidden max-w-7xl mx-auto px-4 h-16 items-center justify-between">
+        {/* Left: Hamburger menu with three stripes */}
+        <button
+          type="button"
+          id="btn-mobile-hamburger-nav"
+          onClick={() => setMobileDrawerOpen(true)}
+          className="p-2 rounded-xl border border-emerald-900/10 dark:border-[#70B873]/25 bg-white/70 dark:bg-[#16291E]/80 text-gray-700 dark:text-gray-200 hover:bg-emerald-50 dark:hover:bg-[#0D1912] transition-colors cursor-pointer shadow-xs"
+          aria-label="Abrir menú de navegación móvil"
+        >
+          <Menu className="w-5 h-5 text-[#0E5C36] dark:text-[#70B873]" />
+        </button>
+
+        {/* Center: NutriGrow centered in the middle */}
+        <div className="flex items-center justify-center">
+          <Logo 
+            size="sm" 
+            isDark={isDark} 
+            showSubtitle={false} 
+            onClick={() => onNavigate('inicio')} 
+          />
+        </div>
+
+        {/* Right: User profile photo */}
+        <button
+          type="button"
+          id="btn-mobile-user-profile-nav"
+          onClick={() => onNavigate('perfil')}
+          className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#70B873] shadow-xs cursor-pointer shrink-0"
+          title={user.name}
+          aria-label="Ir a mi perfil"
+        >
+          {user.avatar ? (
+            <img
+              src={user.avatar}
+              alt={user.name}
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-[#0E5C36] text-white flex items-center justify-center">
+              <User className="w-4 h-4" />
+            </div>
+          )}
+        </button>
+      </div>
+
+      {/* MOBILE LEFT DRAWER (Opens when user taps the 3 stripes on mobile) */}
+      {mobileDrawerOpen && (
+        <div className="fixed inset-0 z-[100] flex md:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in"
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+
+          {/* Slide-out Left Drawer with Computer Menu Items */}
+          <aside
+            id="navbar-mobile-left-drawer"
+            className={`relative z-10 w-80 max-w-[85vw] h-full flex flex-col justify-between p-5 shadow-2xl border-r transition-transform animate-in slide-in-from-left duration-300 overflow-y-auto ${
+              isDark
+                ? 'bg-[#16291E] border-[#70B873]/25 text-white'
+                : 'bg-[#FDFCFA] border-[#0E5C36]/20 text-gray-800'
+            }`}
+          >
+            <div className="space-y-4">
+              {/* Drawer Header: Logo + Close */}
+              <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-800">
+                <Logo 
+                  size="sm" 
+                  isDark={isDark} 
+                  showSubtitle={false} 
+                  onClick={() => {
+                    onNavigate('inicio');
+                    setMobileDrawerOpen(false);
+                  }} 
+                />
+                <button
+                  type="button"
+                  id="btn-close-mobile-navbar-drawer"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="p-1.5 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-[#0D1912] transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5 text-gray-500 hover:text-gray-900 dark:hover:text-white" />
+                </button>
+              </div>
+
+              {/* User Quick Profile Card */}
+              <div
+                onClick={() => {
+                  onNavigate('perfil');
+                  setMobileDrawerOpen(false);
+                }}
+                className="p-3 rounded-2xl bg-[#0E5C36]/10 dark:bg-[#70B873]/10 border border-[#0E5C36]/20 dark:border-[#70B873]/20 flex items-center gap-3 cursor-pointer"
+              >
+                <img
+                  src={user.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80'}
+                  alt={user.name}
+                  referrerPolicy="no-referrer"
+                  className="w-11 h-11 rounded-full object-cover border-2 border-[#70B873] shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-sm font-bold truncate text-[#0E5C36] dark:text-[#70B873]">
+                    {user.name}
+                  </h4>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                    {user.email}
+                  </p>
+                  <span className="inline-block mt-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                    🔥 Racha: {user.streakDays} días
+                  </span>
+                </div>
+              </div>
+
+              {/* Computer Menu Items transferred into Mobile Drawer */}
+              <div className="space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-1.5">
+                  Menú Principal
+                </p>
+
+                {/* 1. Inicio */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigate('inicio');
+                    setMobileDrawerOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                    currentView === 'inicio'
+                      ? 'bg-[#0E5C36] text-white shadow-sm'
+                      : 'hover:bg-emerald-50 dark:hover:bg-[#0D1912] text-gray-700 dark:text-gray-200'
+                  }`}
+                >
+                  <Home className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
+                  <span>Inicio</span>
+                </button>
+
+                {/* 2. Recetas with collapsible categories */}
+                <div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onNavigate('recetas', 'todos');
+                        setMobileDrawerOpen(false);
+                      }}
+                      className={`flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                        currentView === 'recetas'
+                          ? 'bg-[#0E5C36] text-white shadow-sm'
+                          : 'hover:bg-emerald-50 dark:hover:bg-[#0D1912] text-gray-700 dark:text-gray-200'
+                      }`}
+                    >
+                      <UtensilsCrossed className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
+                      <span>Recetas</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMobileRecipesOpen(!mobileRecipesOpen)}
+                      className="p-2.5 rounded-xl border border-gray-200/50 dark:border-gray-800 hover:bg-emerald-50 dark:hover:bg-[#0D1912] transition-colors text-gray-500 cursor-pointer"
+                      title="Ver categorías de recetas"
+                      aria-label="Ver categorías de recetas"
+                    >
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileRecipesOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                  </div>
+
+                  {mobileRecipesOpen && (
+                    <div className="pl-4 pr-1 py-1 space-y-1 border-l-2 border-[#70B873]/30 ml-4 my-1">
+                      {recipeDropdownItems.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => {
+                            onNavigate('recetas', item.id);
+                            setMobileDrawerOpen(false);
+                          }}
+                          className="w-full text-left px-2 py-1.5 rounded-lg text-xs font-medium hover:bg-emerald-50 dark:hover:bg-[#0D1912] text-gray-600 dark:text-gray-300 flex items-center gap-2 cursor-pointer"
+                        >
+                          <item.icon className="w-3.5 h-3.5 shrink-0" style={{ color: item.color }} />
+                          <span className="truncate">{item.title}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Mis Proyectos */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigate('proyectos');
+                    setMobileDrawerOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                    currentView === 'proyectos'
+                      ? 'bg-[#0E5C36] text-white shadow-sm'
+                      : 'hover:bg-emerald-50 dark:hover:bg-[#0D1912] text-gray-700 dark:text-gray-200'
+                  }`}
+                >
+                  <Sprout className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
+                  <span>Mis Proyectos</span>
+                </button>
+
+                {/* 4. Ayuda por IA */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigate('ayuda_ia');
+                    setMobileDrawerOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                    currentView === 'ayuda_ia'
+                      ? 'bg-[#0E5C36] text-white shadow-sm ring-1 ring-[#70B873]'
+                      : 'hover:bg-emerald-50 dark:hover:bg-[#0D1912] text-gray-700 dark:text-gray-200'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <span className="flex-1">Ayuda por IA</span>
+                  <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873]">
+                    Gemini
+                  </span>
+                </button>
+
+                {/* 5. Mi Perfil & Biometría */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigate('perfil');
+                    setMobileDrawerOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                    currentView === 'perfil'
+                      ? 'bg-[#0E5C36] text-white shadow-sm'
+                      : 'hover:bg-emerald-50 dark:hover:bg-[#0D1912] text-gray-700 dark:text-gray-200'
+                  }`}
+                >
+                  <User className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
+                  <span>Mi Perfil & Biometría</span>
+                </button>
+
+                {/* 6. Configuración de Cuenta */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigate('configuracion');
+                    setMobileDrawerOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                    currentView === 'configuracion'
+                      ? 'bg-[#0E5C36] text-white shadow-sm'
+                      : 'hover:bg-emerald-50 dark:hover:bg-[#0D1912] text-gray-700 dark:text-gray-200'
+                  }`}
+                >
+                  <Settings className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
+                  <span>Configuración de Cuenta</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Drawer Bottom Actions: Theme Toggle & Logout */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2 mt-4">
+              <button
+                type="button"
+                onClick={onToggleTheme}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-[#0D1912] transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  {isDark ? <Sun className="w-4 h-4 text-[#70B873]" /> : <Moon className="w-4 h-4 text-[#0E5C36]" />}
+                  <span>{isDark ? 'Modo Oscuro' : 'Modo Claro'}</span>
+                </div>
+                <span className="text-[10px] text-gray-400 font-bold uppercase">Cambiar</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileDrawerOpen(false);
+                  onLogout();
+                }}
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Cerrar Sesión</span>
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* 2. DESKTOP HEADER BAR (Unchanged layout for desktop as instructed: "No cambies nada de la parte del computador") */}
+      <div className="hidden md:flex max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 items-center justify-between">
         {/* LEFT: BRAND LOGO */}
         <div className="flex items-center shrink-0">
           <Logo 
@@ -231,7 +523,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>Proyectos</span>
           </button>
 
-          {/* 4. AYUDA POR IA (Gemini-Powered Botanical & Nutrition Assistant) */}
+          {/* 4. AYUDA POR IA (Gemini-Powered Natural & Nutrition Assistant) */}
           <button
             id="nav-btn-ayuda-ia"
             onClick={() => onNavigate('ayuda_ia')}

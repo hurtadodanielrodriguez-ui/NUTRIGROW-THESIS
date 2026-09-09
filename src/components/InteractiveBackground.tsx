@@ -98,7 +98,7 @@ export const InteractiveBackground: React.FC<InteractiveBackgroundProps> = ({ is
 
     initParticles();
 
-    // Draw botanical stylized leaf
+    // Draw natural stylized leaf
     const drawLeaf = (ctx: CanvasRenderingContext2D, size: number) => {
       ctx.beginPath();
       ctx.moveTo(0, -size);

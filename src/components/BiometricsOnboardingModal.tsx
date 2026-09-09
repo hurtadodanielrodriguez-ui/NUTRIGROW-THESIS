@@ -144,7 +144,7 @@ export const BiometricsOnboardingModal: React.FC<BiometricsOnboardingModalProps>
             Personaliza tu Plan NutriGrow 🌱
           </h2>
           <p className={`text-xs sm:text-sm mt-1.5 font-medium max-w-md mx-auto ${isDark ? 'text-gray-300' : 'text-[#2D4536]'}`}>
-            Para calcular con precisión científica tus calorías diarias, distribución de macronutrientes y recomendaciones botánicas, ingresa tus datos obligatorios.
+            Para calcular con precisión científica tus calorías diarias, distribución de macronutrientes y recomendaciones vegetales, ingresa tus datos obligatorios.
           </p>
         </div>
 

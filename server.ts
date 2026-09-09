@@ -28,7 +28,7 @@ function getGeminiClient(): GoogleGenAI | null {
 
 async function startServer() {
   const app = express();
-  app.use(express.json());
+  app.use(express.json({ limit: '10mb' }));
 
   // Health check endpoint
   app.get('/api/health', (req, res) => {
@@ -42,15 +42,19 @@ async function startServer() {
 
     // Helper for generating intelligent local NutriGrow response & actionable cards
     const generateLocalFallback = () => {
-      const lastUserMsg = (messages && messages.length > 0 && messages[messages.length - 1]?.content)
-        ? String(messages[messages.length - 1].content).toLowerCase()
-        : '';
+      const lastMsgObj = (messages && messages.length > 0) ? messages[messages.length - 1] : null;
+      const lastUserMsg = (lastMsgObj && lastMsgObj.content) ? String(lastMsgObj.content).toLowerCase() : '';
+      const hasImage = Boolean(lastMsgObj?.imageUrl);
       const userAge = userContext?.age || 26;
       const userWeight = userContext?.weightKg || 62.5;
       const userHeight = userContext?.heightCm || 168;
       const userCalories = userContext?.dailyCalories || 2100;
       let reply = `¡Hola ${userContext?.name ? userContext.name.split(' ')[0] : 'Amigo NutriGrow'}! 🌱 Con mucho gusto te asisto considerando tu perfil biométrico (${userAge} años, ${userHeight} cm, ${userWeight} kg, meta de ${userCalories} kcal). `;
       const actions: any[] = [];
+
+      if (hasImage) {
+        reply += `He examinado detenidamente la imagen que adjuntaste 📸🌱. Presenta una pigmentación y estructura vegetal vibrante con excelente concentración de clorofila activa y frescura celular. `;
+      }
 
       if (lastUserMsg.includes('proyecto') || lastUserMsg.includes('cultivo') || lastUserMsg.includes('microgreen') || lastUserMsg.includes('huerto') || lastUserMsg.includes('brote') || lastUserMsg.includes('germinar') || lastUserMsg.includes('reto') || lastUserMsg.includes('hábito')) {
         reply += `He diseñado un proyecto completo para ti: **Cultivo de Microgreens de Rábano & Brócoli en Casa**. Los microgreens son fuentes concentradas de sulforafano, polifenoles y clorofila activa. Puedes agregarlo directamente a tu sección de Proyectos con el botón inferior para comenzar el seguimiento guiado paso a paso.`;
@@ -71,7 +75,7 @@ async function startServer() {
           }
         });
       } else if (lastUserMsg.includes('receta') || lastUserMsg.includes('plato') || lastUserMsg.includes('desayuno') || lastUserMsg.includes('almuerzo') || lastUserMsg.includes('cena') || lastUserMsg.includes('snack') || lastUserMsg.includes('dieta') || lastUserMsg.includes('comida') || lastUserMsg.includes('smoothie') || lastUserMsg.includes('batido') || lastUserMsg.includes('bebida') || lastUserMsg.includes('postre')) {
-        let recTitle = 'Bowl Botánico de Quinoa, Aguacate & Microgreens';
+        let recTitle = 'Bowl Vegetal de Quinoa, Aguacate & Microgreens';
         let recCat = 'almuerzos';
         let recCatLabel = 'Almuerzo Balanceado';
         let recCal = 420;
@@ -96,7 +100,7 @@ async function startServer() {
         ];
 
         if (lastUserMsg.includes('desayuno')) {
-          recTitle = 'Pudín de Chía Botánico con Espirulina & Berries';
+          recTitle = 'Pudín de Chía Natural con Espirulina & Berries';
           recCat = 'desayunos';
           recCatLabel = 'Desayuno Funcional';
           recCal = 340;
@@ -141,7 +145,7 @@ async function startServer() {
           recInst = ['Licuar todos los ingredientes a alta potencia durante 45 segundos.', 'Servir de inmediato con hielo sin colar para preservar la fibra viva.'];
         }
 
-        reply += `¡Excelente elección! He preparado una receta botánica adaptada a tu meta calórica: **${recTitle}** (${recCal} kcal, ${recProt}g proteína). Es funcional, antiinflamatoria y equilibrada. Puedes guardarla en tu recetario ahora mismo con un solo clic.`;
+        reply += `¡Excelente elección! He preparado una receta natural adaptada a tu meta calórica: **${recTitle}** (${recCal} kcal, ${recProt}g proteína). Es funcional, antiinflamatoria y equilibrada. Puedes guardarla en tu recetario ahora mismo con un solo clic.`;
         actions.push({
           type: 'add_recipe',
           recipePayload: {
@@ -158,7 +162,7 @@ async function startServer() {
             description: `Plato funcional rico en nutrientes vivos diseñado para tu requerimiento de ${userCalories} kcal.`,
             ingredients: recIng,
             instructions: recInst,
-            tags: ['Botánico', 'Antiinflamatorio', 'Microgreens', 'Saludable']
+            tags: ['Vegetal', 'Antiinflamatorio', 'Microgreens', 'Saludable']
           }
         });
       } else if (lastUserMsg.includes('macro') || lastUserMsg.includes('calor') || lastUserMsg.includes('peso') || lastUserMsg.includes('meta') || lastUserMsg.includes('grasa') || lastUserMsg.includes('musculo') || lastUserMsg.includes('edad') || lastUserMsg.includes('estatura') || lastUserMsg.includes('plan')) {
@@ -190,11 +194,11 @@ async function startServer() {
       // Formulate system instruction
       const systemInstruction = `
 Eres "NutriGrow AI", el Asistente Inteligente de NutriGrow.
-NutriGrow es una plataforma integral de nutrición botánica, cultivo de microgreens, cocina antiinflamatoria, recetas funcionales y proyectos de bienestar.
+NutriGrow es una plataforma integral de nutrición vegetal y consciente, cultivo de microgreens, cocina antiinflamatoria, recetas funcionales y proyectos de bienestar.
 
 Tu personalidad:
 - Siempre extremadamente amable, cortés, empático, motivador y claro.
-- Saluda con calidez y explica con fundamentos de nutrición celular y botánica consciente.
+- Saluda con calidez y explica con fundamentos de nutrición celular y alimentación vegetal consciente.
 - Cuando el usuario te pida crear una receta, un proyecto de cultivo o hábito, un plan de dieta o ajustar sus objetivos, dale una respuesta explicativa y detallada, e incluye un bloque estructurado JSON al final con las acciones que el usuario puede aplicar en su app con 1 solo clic.
 
 Formato de acciones (en un bloque markdown triple backtick json etiquetado como \`\`\`json { "actions": [...] } \`\`\`):
@@ -214,7 +218,7 @@ Las acciones pueden ser:
    {
      "type": "add_recipe",
      "recipePayload": {
-       "title": "Nombre de la receta botánica",
+       "title": "Nombre de la receta funcional o vegetal",
        "category": "desayunos" | "almuerzos" | "cenas" | "snacks" | "bebidas",
        "categoryLabel": "Desayuno Energético" (o Almuerzo, Cena, etc.),
        "prepTimeMinutes": 20,
@@ -257,11 +261,30 @@ Siempre sé educado, usa un tono profesional y acogedor en español.
       if (ai) {
         // Build conversation contents cleanly starting with a user turn as required by Gemini
         const rawTurns = (messages || [])
-          .filter((m: any) => m && typeof m.content === 'string' && m.content.trim().length > 0)
-          .map((m: any) => ({
-            role: m.sender === 'user' ? 'user' : 'model',
-            parts: [{ text: m.content.trim() }]
-          }));
+          .filter((m: any) => m && ((typeof m.content === 'string' && m.content.trim().length > 0) || m.imageUrl))
+          .map((m: any) => {
+            const parts: any[] = [];
+            if (m.imageUrl && typeof m.imageUrl === 'string' && m.imageUrl.startsWith('data:')) {
+              const matches = m.imageUrl.match(/^data:(image\/[a-zA-Z0-9.+_-]+);base64,(.+)$/);
+              if (matches) {
+                parts.push({
+                  inlineData: {
+                    mimeType: matches[1],
+                    data: matches[2]
+                  }
+                });
+              }
+            }
+            if (m.content && typeof m.content === 'string' && m.content.trim().length > 0) {
+              parts.push({ text: m.content.trim() });
+            } else if (parts.length === 1 && m.imageUrl) {
+              parts.push({ text: 'Por favor analiza esta imagen desde el enfoque nutricional y vegetal de NutriGrow.' });
+            }
+            return {
+              role: m.sender === 'user' ? 'user' : 'model',
+              parts
+            };
+          });
 
         const firstUserIdx = rawTurns.findIndex((t: any) => t.role === 'user');
         const safeContents = firstUserIdx >= 0

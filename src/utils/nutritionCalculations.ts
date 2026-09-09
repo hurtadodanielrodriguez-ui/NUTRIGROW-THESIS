@@ -96,7 +96,7 @@ export function generatePersonalizedPlan(params: CalculatePlanParams): Personali
   const waterLiters = Number(((weightKg * 35) / 1000).toFixed(1));
   const waterGlasses = Math.round((waterLiters * 1000) / 250);
 
-  // Specific botanical and nutrition recommendations based on age & BMI
+  // Specific natural and nutrition recommendations based on age & BMI
   const recommendations: string[] = [];
 
   if (age < 25) {

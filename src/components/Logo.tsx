@@ -35,7 +35,7 @@ export const Logo: React.FC<LogoProps> = ({
         isHero ? 'flex-col text-center' : 'flex-row'
       } ${className}`}
     >
-      {/* Botanical Meditating Emblem Icon */}
+      {/* Natural Meditating Emblem Icon */}
       <div className={`relative ${iconDimensions} flex items-center justify-center shrink-0`}>
         {/* Glow backdrop */}
         <div
@@ -44,7 +44,7 @@ export const Logo: React.FC<LogoProps> = ({
           }`}
         />
 
-        {/* Circular botanical emblem matching the new NutriGrow logo */}
+        {/* Circular natural emblem matching the new NutriGrow logo */}
         <div
           className={`relative w-full h-full rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-105 overflow-hidden ${
             isDark

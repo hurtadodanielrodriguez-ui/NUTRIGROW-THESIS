@@ -128,7 +128,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873]">
-            <UtensilsCrossed className="w-3.5 h-3.5" /> Cocina Botánica & Nutrición
+            <UtensilsCrossed className="w-3.5 h-3.5" /> Cocina Vegetal & Nutrición
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold font-display">
             Recetario Inteligente <span className="text-[#0E5C36] dark:text-[#70B873]">NutriGrow</span>

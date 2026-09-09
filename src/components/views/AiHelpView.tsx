@@ -3,7 +3,8 @@ import {
   Sparkles, Send, Bot, User as UserIcon, Sprout, 
   UtensilsCrossed, Target, Check, ArrowRight, RefreshCw, 
   Plus, Flame, HeartPulse, Clock, Dumbbell, ShieldCheck,
-  ChevronRight, Lightbulb, Zap, Info, Layers
+  ChevronRight, Lightbulb, Zap, Info, Layers,
+  Paperclip, Camera, Image as ImageIcon, FileText, X
 } from 'lucide-react';
 import { UserProfile, Recipe, Project, ChatMessage, AiActionData, ViewMode } from '../../types';
 import confetti from 'canvas-confetti';
@@ -41,7 +42,7 @@ const STARTER_PROMPTS = [
   {
     icon: Zap,
     title: 'Reto de Hábitos e Hidratación',
-    prompt: 'Crea un proyecto de 14 días para mejorar mi hidratación matutina y energía celular con hábitos botánicos.',
+    prompt: 'Crea un proyecto de 14 días para mejorar mi hidratación matutina y energía celular con hábitos naturales.',
     color: '#0284C7'
   }
 ];
@@ -60,13 +61,20 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
     {
       id: 'welcome-1',
       sender: 'assistant',
-      content: `¡Hola ${user?.name ? user.name.split(' ')[0] : 'Amigo'}! 🌱 Qué alegría saludarte. Soy **NutriGrow AI**, tu asistente botánico y nutricional.\n\nEstoy aquí para guiarte de forma personalizada, crear nuevos **proyectos de cultivo y hábitos**, diseñar **recetas funcionales** a tu medida, y ajustar tus **metas y macronutrientes** cuando lo necesites.\n\n¿En qué te gustaría que trabajemos hoy? Puedes elegir una de las sugerencias o escribir tu consulta.`,
+      content: `¡Hola ${user?.name ? user.name.split(' ')[0] : 'Amigo'}! 🌱 Qué alegría saludarte. Soy **NutriGrow AI**, tu asistente vegetal y nutricional.\n\nEstoy aquí para guiarte de forma personalizada, crear nuevos **proyectos de cultivo y hábitos**, diseñar **recetas funcionales** a tu medida, y ajustar tus **metas y macronutrientes** cuando lo necesites.\n\n¿En qué te gustaría que trabajemos hoy? Puedes elegir una de las sugerencias o escribir tu consulta.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [appliedActions, setAppliedActions] = useState<{ [key: string]: boolean }>({});
+  const [attachedFile, setAttachedFile] = useState<{
+    previewUrl: string | null;
+    name: string;
+    isImage: boolean;
+  } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -77,20 +85,57 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
     scrollToBottom();
   }, [messages, isLoading]);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const isImg = file.type.startsWith('image/');
+    if (isImg) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAttachedFile({
+          previewUrl: reader.result as string,
+          name: file.name,
+          isImage: true
+        });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setAttachedFile({
+        previewUrl: null,
+        name: file.name,
+        isImage: false
+      });
+    }
+    e.target.value = '';
+  };
+
+  const handleRemoveAttachment = () => {
+    setAttachedFile(null);
+  };
+
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputValue).trim();
-    if (!query || isLoading) return;
+    if ((!query && !attachedFile) || isLoading) return;
+
+    const currentAttachment = attachedFile;
+    const finalContent = query || (currentAttachment?.isImage 
+      ? 'Analiza esta imagen vegetal / nutricional que te comparto y dame tus recomendaciones.' 
+      : `Te comparto el archivo: ${currentAttachment?.name}`);
 
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      content: query,
+      content: finalContent,
+      imageUrl: currentAttachment?.previewUrl || undefined,
+      fileName: currentAttachment?.name || undefined,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInputValue('');
+    setAttachedFile(null);
     setIsLoading(true);
 
     try {
@@ -98,7 +143,11 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: updatedMessages.map((m) => ({ sender: m.sender, content: m.content })),
+          messages: updatedMessages.map((m) => ({ 
+            sender: m.sender, 
+            content: m.content,
+            imageUrl: m.imageUrl
+          })),
           userContext: {
             name: user?.name || 'Amigo NutriGrow',
             goal: user?.goal || 'salud_integral',
@@ -138,11 +187,11 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
       let fallbackText = `¡Hola ${user?.name ? user.name.split(' ')[0] : 'Amigo'}! 🌱 He procesado tu orden considerando tu perfil (${user?.age || 26} años, ${user?.weightKg || 62.5} kg y meta de ${user?.dailyCalories || 2100} kcal). `;
 
       if (lowerQ.includes('receta') || lowerQ.includes('plato') || lowerQ.includes('comida') || lowerQ.includes('dieta') || lowerQ.includes('almuerzo') || lowerQ.includes('desayuno') || lowerQ.includes('cena')) {
-        fallbackText += `Aquí tienes una receta botánica de alta densidad nutricional diseñada a la medida de tu objetivo calórico de **${user?.dailyCalories || 2100} kcal**. Puedes guardarla directamente en tu recetario:`;
+        fallbackText += `Aquí tienes una receta natural de alta densidad nutricional diseñada a la medida de tu objetivo calórico de **${user?.dailyCalories || 2100} kcal**. Puedes guardarla directamente en tu recetario:`;
         fallbackActions.push({
           type: 'add_recipe',
           recipePayload: {
-            title: 'Bowl Botánico de Quinoa Real, Aguacate & Microgreens',
+            title: 'Bowl Vegetal de Quinoa Real, Aguacate & Microgreens',
             category: 'almuerzos',
             categoryLabel: 'Almuerzo Balanceado',
             prepTimeMinutes: 20,
@@ -257,10 +306,10 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
       fats: payload.fats || 15,
       difficulty: payload.difficulty || 'Fácil',
       image: payload.image || 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
-      description: payload.description || 'Deliciosa receta botánica rica en nutrientes vivos.',
+      description: payload.description || 'Deliciosa receta natural rica en nutrientes vivos.',
       ingredients: payload.ingredients || [],
       instructions: payload.instructions || [],
-      tags: payload.tags || ['Botánico', 'Saludable', 'NutriGrow AI'],
+      tags: payload.tags || ['Vegetal', 'Saludable', 'NutriGrow AI'],
       rating: 5.0,
       reviewsCount: 1,
       isFavorite: true
@@ -321,7 +370,7 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12 animate-in fade-in duration-300">
-      {/* HEADER BANNER: GEMINI AI POWERED BOTANICAL INTELLIGENCE */}
+      {/* HEADER BANNER: GEMINI AI POWERED NUTRITIONAL INTELLIGENCE */}
       <div className={`p-6 sm:p-8 rounded-3xl border shadow-xl relative overflow-hidden transition-all ${
         isDark 
           ? 'bg-gradient-to-br from-[#16291E] via-[#0F2017] to-[#0D1912] border-[#70B873]/30 text-white' 
@@ -456,6 +505,26 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
                       ? 'bg-[#1A2E22] text-gray-100 border border-[#70B873]/20 rounded-tl-xs shadow-md'
                       : 'bg-[#F6F4EE] text-gray-900 border border-emerald-900/10 rounded-tl-xs shadow-xs'
                   }`}>
+                    {/* Render attached image if present */}
+                    {msg.imageUrl && (
+                      <div className="mb-3 max-w-xs sm:max-w-sm rounded-2xl overflow-hidden border border-white/20 shadow-md">
+                        <img
+                          src={msg.imageUrl}
+                          alt="Imagen enviada por el usuario"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-auto max-h-72 object-cover"
+                        />
+                      </div>
+                    )}
+
+                    {/* Render attached file if present and not image */}
+                    {msg.fileName && !msg.imageUrl && (
+                      <div className="mb-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/10 dark:bg-white/10 border border-white/20 text-xs font-semibold">
+                        <FileText className="w-4 h-4" />
+                        <span className="truncate max-w-[200px]">{msg.fileName}</span>
+                      </div>
+                    )}
+
                     {/* Render message body */}
                     <div className="whitespace-pre-wrap space-y-2">
                       {msg.content}
@@ -775,7 +844,7 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
                     <span className="w-2 h-2 rounded-full bg-[#70B873] animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                   <span className="text-xs font-semibold text-[#0E5C36] dark:text-[#70B873]">
-                    NutriGrow AI está formulando tu respuesta botánica...
+                    NutriGrow AI está formulando tu respuesta nutricional...
                   </span>
                 </div>
               </div>
@@ -824,7 +893,7 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => handleSendMessage('¿Cuáles son los mejores hábitos botánicos para mejorar mi digestión y energía?')}
+              onClick={() => handleSendMessage('¿Cuáles son los mejores hábitos naturales para mejorar mi digestión y energía?')}
               className={`px-2.5 py-1 rounded-full border text-[11px] font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 isDark ? 'border-[#70B873]/30 bg-[#16291E] text-gray-200 hover:bg-[#1f3829]' : 'border-emerald-900/15 bg-white text-gray-700 hover:bg-emerald-50'
               }`}
@@ -833,6 +902,59 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
             </button>
           </div>
 
+          {/* ATTACHMENT PREVIEW BANNER */}
+          {attachedFile && (
+            <div className="mb-2.5 flex items-center justify-between gap-2 p-2 px-3 rounded-2xl bg-emerald-50 dark:bg-[#16291E] border border-[#70B873]/30 animate-in fade-in slide-in-from-bottom-2">
+              <div className="flex items-center gap-2.5 overflow-hidden">
+                {attachedFile.isImage && attachedFile.previewUrl ? (
+                  <img
+                    src={attachedFile.previewUrl}
+                    alt="Preview"
+                    referrerPolicy="no-referrer"
+                    className="w-10 h-10 rounded-xl object-cover border border-emerald-900/20 shrink-0"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-xl bg-[#0E5C36]/15 dark:bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873] flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-gray-900 dark:text-gray-100 truncate">
+                    {attachedFile.name}
+                  </p>
+                  <span className="text-[10px] text-[#0E5C36] dark:text-[#70B873] font-medium">
+                    {attachedFile.isImage ? 'Foto lista para análisis nutricional' : 'Documento adjunto listo'}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleRemoveAttachment}
+                className="p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                title="Eliminar archivo"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* HIDDEN INPUTS FOR FILE & CAMERA */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            accept="image/*,.pdf,.txt,.doc,.docx"
+            className="hidden"
+          />
+          <input
+            type="file"
+            ref={cameraInputRef}
+            onChange={handleFileSelect}
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+          />
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -840,15 +962,41 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
             }}
             className="flex items-center gap-2"
           >
+            {/* Attachment buttons */}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className={`p-3 rounded-2xl border transition-all cursor-pointer shrink-0 ${
+                isDark 
+                  ? 'border-[#70B873]/30 bg-[#16291E] text-gray-300 hover:text-[#70B873] hover:border-[#70B873]' 
+                  : 'border-emerald-900/15 bg-white text-gray-600 hover:text-[#0E5C36] hover:border-[#0E5C36] shadow-sm'
+              }`}
+              title="Adjuntar archivo o imagen"
+            >
+              <Paperclip className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => cameraInputRef.current?.click()}
+              className={`p-3 rounded-2xl border transition-all cursor-pointer shrink-0 ${
+                isDark 
+                  ? 'border-[#70B873]/30 bg-[#16291E] text-gray-300 hover:text-[#70B873] hover:border-[#70B873]' 
+                  : 'border-emerald-900/15 bg-white text-gray-600 hover:text-[#0E5C36] hover:border-[#0E5C36] shadow-sm'
+              }`}
+              title="Tomar o subir foto de cultivo o comida"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
+
             <div className="relative flex-1">
               <input
                 type="text"
                 id="ai-chat-input"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Escribe lo que necesitas (ej: 'Crea un proyecto de microgreens', 'Recomiéndame una cena con espinaca')..."
+                placeholder={attachedFile ? 'Añade una pregunta sobre tu archivo (o presiona Enviar)...' : "Escribe lo que necesitas o adjunta una foto..."}
                 disabled={isLoading}
-                className={`w-full py-3.5 pl-4 pr-12 text-xs sm:text-sm rounded-2xl border transition-all focus:outline-none focus:ring-2 focus:ring-[#70B873] ${
+                className={`w-full py-3.5 px-4 text-xs sm:text-sm rounded-2xl border transition-all focus:outline-none focus:ring-2 focus:ring-[#70B873] ${
                   isDark
                     ? 'bg-[#16291E] border-[#70B873]/30 text-white placeholder-gray-500'
                     : 'bg-white border-emerald-900/20 text-gray-900 placeholder-gray-400 shadow-inner'
@@ -859,9 +1007,9 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
             <button
               type="submit"
               id="ai-chat-send-btn"
-              disabled={!inputValue.trim() || isLoading}
+              disabled={(!inputValue.trim() && !attachedFile) || isLoading}
               className={`p-3.5 sm:px-5 rounded-2xl font-bold text-xs sm:text-sm text-white flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0 shadow-lg ${
-                !inputValue.trim() || isLoading
+                (!inputValue.trim() && !attachedFile) || isLoading
                   ? 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed opacity-60'
                   : 'bg-gradient-to-r from-[#0E5C36] to-[#16814C] hover:from-[#116d41] hover:to-[#1a9557] active:scale-95 shadow-emerald-900/30'
               }`}

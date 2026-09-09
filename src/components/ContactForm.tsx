@@ -75,7 +75,7 @@ export const ContactForm: React.FC<ContactFormProps> = ({ isDark }) => {
           ¿Tienes preguntas sobre <span className={isDark ? 'text-[#70B873]' : 'text-[#0E5C36]'}>NutriGrow</span>?
         </h3>
         <p className={`text-sm mt-1 font-medium ${isDark ? 'text-gray-300' : 'text-[#2D4536]'}`}>
-          Escríbenos y nuestro equipo de nutricionistas y botánicos te responderá en minutos.
+          Escríbenos y nuestro equipo de nutricionistas y especialistas te responderá en minutos.
         </p>
       </div>
 

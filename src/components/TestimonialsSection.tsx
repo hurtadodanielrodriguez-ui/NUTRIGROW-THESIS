@@ -206,6 +206,65 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ isDark
         </div>
       )}
 
+      {/* Grid of all community member testimonials with their photos */}
+      <div className="mt-8 space-y-3">
+        <p className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-center">
+          Voces de nuestra comunidad viva
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {testimonials.map((tItem, idx) => {
+            const isSelected = current && current.id === tItem.id;
+            return (
+              <div
+                key={tItem.id}
+                onClick={() => {
+                  const targetIdx = filteredTestimonials.findIndex((t) => t.id === tItem.id);
+                  if (targetIdx !== -1) {
+                    setActiveIndex(targetIdx);
+                  } else {
+                    setSelectedTag('Todos');
+                    const allIdx = testimonials.findIndex((t) => t.id === tItem.id);
+                    setActiveIndex(allIdx !== -1 ? allIdx : 0);
+                  }
+                }}
+                className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? 'border-[#0E5C36] dark:border-[#70B873] bg-[#0E5C36]/5 dark:bg-[#70B873]/10 shadow-md ring-2 ring-[#0E5C36]/20'
+                    : isDark
+                    ? 'bg-[#16291E]/60 border-gray-800 hover:border-[#70B873]/50'
+                    : 'bg-white border-gray-200/80 hover:border-[#0E5C36]/40 hover:shadow-xs'
+                }`}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <img
+                    src={tItem.avatar}
+                    alt={tItem.name}
+                    referrerPolicy="no-referrer"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-[#70B873] shrink-0"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <h5 className="text-xs sm:text-sm font-bold truncate text-[#0E5C36] dark:text-[#70B873]">
+                      {tItem.name}
+                    </h5>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                      {tItem.role}
+                    </p>
+                    <div className="flex items-center gap-0.5 mt-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-3 h-3 text-amber-400 fill-amber-400" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs italic text-gray-600 dark:text-gray-300 line-clamp-3">
+                  "{tItem.comment}"
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Add Testimonial Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">

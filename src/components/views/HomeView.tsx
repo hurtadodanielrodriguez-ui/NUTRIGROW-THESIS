@@ -293,7 +293,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800">
             <p className="text-xs font-extrabold uppercase tracking-wider text-[#0E5C36] dark:text-[#70B873] mb-2.5 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
-              Pautas Botánicas Adaptadas a tu Edad y Perfil:
+              Pautas Naturales Adaptadas a tu Edad y Perfil:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {plan.recommendations.map((rec, i) => (
@@ -581,7 +581,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </div>
 
-      {/* DAILY WELLNESS & BOTANICAL WISDOM TIP */}
+      {/* DAILY WELLNESS & NATURAL WISDOM TIP */}
       <div
         className={`rounded-3xl p-5 sm:p-6 border flex flex-col sm:flex-row items-center gap-4 ${
           isDark
@@ -594,7 +594,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
         <div className="flex-1 text-center sm:text-left">
           <h4 className="font-bold text-sm font-display text-[#0E5C36] dark:text-[#70B873]">
-            Consejo Botánico de Hoy: Microgreens de Brócoli
+            Consejo Natural de Hoy: Microgreens de Brócoli
           </h4>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed">
             Los brotes tiernos de brócoli contienen hasta <strong>50 veces más sulforafano</strong> que el brócoli maduro, un potente activador celular antioxidante. Añade 2 cucharadas a tu tazón de quinoa para maximizar tus defensas.
