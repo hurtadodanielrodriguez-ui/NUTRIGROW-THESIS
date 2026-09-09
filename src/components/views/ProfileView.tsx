@@ -5,7 +5,8 @@ import {
   TrendingDown, TrendingUp, Globe, Check
 } from 'lucide-react';
 import { UserProfile, AppLanguage } from '../../types';
-import { SUPPORTED_LANGUAGES, getTranslation } from '../../utils/translations';
+import { SUPPORTED_LANGUAGES } from '../../utils/translations';
+import { useLanguage } from '../../context/LanguageContext';
 import confetti from 'canvas-confetti';
 
 interface ProfileViewProps {
@@ -19,10 +20,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onUpdateUser,
   isDark
 }) => {
+  const { language: currentLang, setLanguage, t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [langFeedback, setLangFeedback] = useState('');
-  const currentLang = user.language || 'es';
-  const t = getTranslation(currentLang);
 
   const [editForm, setEditForm] = useState({
     name: user.name,
@@ -36,11 +36,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   });
 
   const handleLanguageChange = (newLang: AppLanguage) => {
+    setLanguage(newLang);
     onUpdateUser({ language: newLang });
     setEditForm((prev) => ({ ...prev, language: newLang }));
-    try {
-      localStorage.setItem('nutrigrow_lang', newLang);
-    } catch {}
 
     const selectedOpt = SUPPORTED_LANGUAGES.find((l) => l.code === newLang);
     setLangFeedback(`${selectedOpt?.name || newLang}`);

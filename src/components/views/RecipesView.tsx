@@ -6,6 +6,7 @@ import {
   Sparkles, CheckCircle2, ChevronRight, Bookmark
 } from 'lucide-react';
 import { Recipe, RecipeCategory, UserProfile } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 import confetti from 'canvas-confetti';
 
 interface RecipesViewProps {
@@ -29,6 +30,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
   user,
   isDark
 }) => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilterTag, setActiveFilterTag] = useState('Todos');
   const [servingsMultiplier, setServingsMultiplier] = useState(1);
@@ -52,13 +54,13 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
   } | null>(null);
 
   const categoryButtons: { id: RecipeCategory; label: string; icon: any }[] = [
-    { id: 'todos', label: 'Todos los Platillos', icon: UtensilsCrossed },
-    { id: 'desayunos', label: 'Desayunos', icon: Coffee },
-    { id: 'almuerzos', label: 'Almuerzos', icon: Salad },
-    { id: 'cenas', label: 'Cenas', icon: MoonStar },
-    { id: 'snacks', label: 'Snacks', icon: Apple },
-    { id: 'bebidas', label: 'Bebidas Detox', icon: GlassWater },
-    { id: 'macro_calculator', label: 'Calculadora de Macros', icon: Calculator }
+    { id: 'todos', label: t.recipes.allDishes, icon: UtensilsCrossed },
+    { id: 'desayunos', label: t.recipes.breakfasts, icon: Coffee },
+    { id: 'almuerzos', label: t.recipes.lunches, icon: Salad },
+    { id: 'cenas', label: t.recipes.dinners, icon: MoonStar },
+    { id: 'snacks', label: t.recipes.snacks, icon: Apple },
+    { id: 'bebidas', label: t.recipes.drinks, icon: GlassWater },
+    { id: 'macro_calculator', label: t.recipes.calculator, icon: Calculator }
   ];
 
   const allTags = ['Todos', 'Vegano', 'Alto en Proteína', 'Antiinflamatorio', 'Sin Gluten', 'Microgreens', 'Detox'];
@@ -128,13 +130,13 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873]">
-            <UtensilsCrossed className="w-3.5 h-3.5" /> Cocina Vegetal & Nutrición
+            <UtensilsCrossed className="w-3.5 h-3.5" /> {t.recipes.badge}
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold font-display">
-            Recetario Inteligente <span className="text-[#0E5C36] dark:text-[#70B873]">NutriGrow</span>
+            {t.recipes.title} <span className="text-[#0E5C36] dark:text-[#70B873]">{t.recipes.subtitle}</span>
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">
-            Platillos diseñados para maximizar biodisponibilidad de nutrientes, energía celular y vitalidad.
+            {t.recipes.desc}
           </p>
         </div>
 
@@ -146,7 +148,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar ingredientes o recetas..."
+              placeholder={t.recipes.searchPlaceholder}
               className={`w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-2xl border outline-none transition-all ${
                 isDark
                   ? 'bg-[#16291E] border-[#70B873]/30 text-white focus:border-[#70B873]'
@@ -461,7 +463,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
                     }}
                     className="w-full py-2.5 rounded-xl font-bold text-xs bg-emerald-50 dark:bg-[#0D1912] text-[#0E5C36] dark:text-[#70B873] border border-emerald-600/20 hover:bg-[#0E5C36] hover:text-white dark:hover:bg-[#70B873] dark:hover:text-[#0D1912] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
-                    <span>Ver Receta Completa</span>
+                    <span>{t.recipes.viewDetails}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -512,21 +514,21 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
               <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-[#0D1912] border border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-4 text-xs sm:text-sm">
                   <div>
-                    <span className="text-gray-400 block text-[10px] uppercase font-bold">Tiempo</span>
+                    <span className="text-gray-400 block text-[10px] uppercase font-bold">{t.recipes.prepTime}</span>
                     <span className="font-bold flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-[#70B873]" /> {selectedRecipe.prepTimeMinutes} min
                     </span>
                   </div>
                   <div className="w-px h-6 bg-gray-300 dark:bg-gray-700" />
                   <div>
-                    <span className="text-gray-400 block text-[10px] uppercase font-bold">Calorías</span>
+                    <span className="text-gray-400 block text-[10px] uppercase font-bold">{t.recipes.calories}</span>
                     <span className="font-bold text-[#0E5C36] dark:text-[#70B873]">
                       {selectedRecipe.calories * servingsMultiplier} kcal
                     </span>
                   </div>
                   <div className="w-px h-6 bg-gray-300 dark:bg-gray-700" />
                   <div>
-                    <span className="text-gray-400 block text-[10px] uppercase font-bold">Dificultad</span>
+                    <span className="text-gray-400 block text-[10px] uppercase font-bold">{t.recipes.difficulty}</span>
                     <span className="font-bold">{selectedRecipe.difficulty}</span>
                   </div>
                 </div>
@@ -555,7 +557,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
               <div>
                 <h3 className="text-lg font-bold font-display mb-3 flex items-center gap-2">
                   <UtensilsCrossed className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-                  <span>Ingredientes ({selectedRecipe.ingredients.length})</span>
+                  <span>{t.recipes.ingredients} ({selectedRecipe.ingredients.length})</span>
                 </h3>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selectedRecipe.ingredients.map((ing, idx) => (
@@ -574,7 +576,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
               <div>
                 <h3 className="text-lg font-bold font-display mb-3 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-                  <span>Preparación Paso a Paso</span>
+                  <span>{t.recipes.instructions}</span>
                 </h3>
                 <div className="space-y-3">
                   {selectedRecipe.instructions.map((step, idx) => {
@@ -613,7 +615,7 @@ export const RecipesView: React.FC<RecipesViewProps> = ({
                   onClick={() => onSelectRecipe(null)}
                   className="px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-[#0E5C36] text-white hover:bg-[#16472D] transition-colors"
                 >
-                  Listo
+                  {t.common.close}
                 </button>
               </div>
             </div>

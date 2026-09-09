@@ -7,6 +7,7 @@ import {
   Paperclip, Camera, Image as ImageIcon, FileText, X
 } from 'lucide-react';
 import { UserProfile, Recipe, Project, ChatMessage, AiActionData, ViewMode } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 import confetti from 'canvas-confetti';
 
 interface AiHelpViewProps {
@@ -20,33 +21,6 @@ interface AiHelpViewProps {
   isDark: boolean;
 }
 
-const STARTER_PROMPTS = [
-  {
-    icon: Sprout,
-    title: 'Crear Proyecto de Microgreens',
-    prompt: 'Hola, quiero que me crees un nuevo proyecto completo para cultivar microgreens de brócoli y rábano en casa con lista de tareas paso a paso.',
-    color: '#0E5C36'
-  },
-  {
-    icon: UtensilsCrossed,
-    title: 'Sugerir Dieta & Recetas Funcionales',
-    prompt: 'Por favor, sugiereme un plan de comidas antiinflamatorio para hoy y crea una receta deliciosa para el almuerzo que pueda guardar en mi recetario.',
-    color: '#70B873'
-  },
-  {
-    icon: Target,
-    title: 'Ajustar Metas & Macros',
-    prompt: 'Ayúdame a recalcular mis calorías y distribución de macronutrientes para optimizar mi energía y perder grasa de forma saludable.',
-    color: '#E0A938'
-  },
-  {
-    icon: Zap,
-    title: 'Reto de Hábitos e Hidratación',
-    prompt: 'Crea un proyecto de 14 días para mejorar mi hidratación matutina y energía celular con hábitos naturales.',
-    color: '#0284C7'
-  }
-];
-
 export const AiHelpView: React.FC<AiHelpViewProps> = ({
   user,
   onUpdateUser,
@@ -57,6 +31,34 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
   onNavigate,
   isDark
 }) => {
+  const { t } = useLanguage();
+
+  const starterPrompts = [
+    {
+      icon: UtensilsCrossed,
+      title: t.aiHelp.suggestion1Title,
+      prompt: t.aiHelp.suggestion1Prompt,
+      color: '#70B873'
+    },
+    {
+      icon: Sprout,
+      title: t.aiHelp.suggestion2Title,
+      prompt: t.aiHelp.suggestion2Prompt,
+      color: '#0E5C36'
+    },
+    {
+      icon: Target,
+      title: t.aiHelp.suggestion3Title,
+      prompt: t.aiHelp.suggestion3Prompt,
+      color: '#E0A938'
+    },
+    {
+      icon: Zap,
+      title: t.aiHelp.suggestion4Title,
+      prompt: t.aiHelp.suggestion4Prompt,
+      color: '#0284C7'
+    }
+  ];
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'welcome-1',
@@ -386,14 +388,14 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#0E5C36] dark:text-[#70B873]">
-                  Ayuda por IA NutriGrow
+                  {t.aiHelp.title}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#0E5C36] text-white shadow-xs">
-                  Gemini Flash + Resiliente
+                  {t.aiHelp.badge}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 max-w-xl leading-relaxed">
-                Tu asistente inteligente para diseñar dietas personalizadas, crear proyectos de cultivo de microgreens en tu panel y ajustar tus objetivos nutricionales con amabilidad y rigor científico.
+                {t.aiHelp.subtitle}
               </p>
               <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-[#70B873]/15 text-[#0E5C36] dark:text-[#70B873]">
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -425,7 +427,7 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
             Sugerencias para empezar la conversación:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-            {STARTER_PROMPTS.map((starter, i) => {
+            {starterPrompts.map((starter, i) => {
               const IconComp = starter.icon;
               return (
                 <button
@@ -994,7 +996,7 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
                 id="ai-chat-input"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder={attachedFile ? 'Añade una pregunta sobre tu archivo (o presiona Enviar)...' : "Escribe lo que necesitas o adjunta una foto..."}
+                placeholder={attachedFile ? 'Añade una pregunta sobre tu archivo (o presiona Enviar)...' : t.aiHelp.inputPlaceholder}
                 disabled={isLoading}
                 className={`w-full py-3.5 px-4 text-xs sm:text-sm rounded-2xl border transition-all focus:outline-none focus:ring-2 focus:ring-[#70B873] ${
                   isDark
@@ -1015,14 +1017,14 @@ export const AiHelpView: React.FC<AiHelpViewProps> = ({
               }`}
             >
               <Send className="w-4 h-4" />
-              <span className="hidden sm:inline">Consultar</span>
+              <span className="hidden sm:inline">{t.aiHelp.send}</span>
             </button>
           </form>
 
           <div className="mt-2 flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 px-1">
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-[#0E5C36] dark:text-[#70B873]" />
-              NutriGrow AI siempre disponible • Respuestas amables y fundamentadas
+              {t.aiHelp.disclaimer}
             </span>
             <span className="hidden md:inline">
               Presiona Enter para enviar

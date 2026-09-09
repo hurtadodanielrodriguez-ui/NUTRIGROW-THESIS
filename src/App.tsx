@@ -12,6 +12,7 @@ import { ProjectsView } from './components/views/ProjectsView';
 import { SettingsView } from './components/views/SettingsView';
 import { AiHelpView } from './components/views/AiHelpView';
 import { BiometricsOnboardingModal } from './components/BiometricsOnboardingModal';
+import { LanguageProvider } from './context/LanguageContext';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewMode>('landing');
@@ -117,125 +118,130 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen relative transition-colors duration-300 ${isDark ? 'dark bg-[#0D1912] text-[#E2EBE5]' : 'bg-[#F6F4EE] text-[#1A2E22]'}`}>
-      {/* Dynamic Cursor-following Natural Canvas Background */}
-      <InteractiveBackground isDark={isDark} />
+    <LanguageProvider
+      initialLanguage={user.language || 'es'}
+      onLanguageChange={(newLang) => setUser((prev) => ({ ...prev, language: newLang }))}
+    >
+      <div className={`min-h-screen relative transition-colors duration-300 ${isDark ? 'dark bg-[#0D1912] text-[#E2EBE5]' : 'bg-[#F6F4EE] text-[#1A2E22]'}`}>
+        {/* Dynamic Cursor-following Natural Canvas Background */}
+        <InteractiveBackground isDark={isDark} />
 
-      {/* VIEW 1: LANDING PAGE */}
-      {currentView === 'landing' && (
-        <LandingPage
-          onOpenAuth={handleOpenAuth}
-          onExploreRecipes={(category) => {
-            if (category) setSelectedRecipeCategory(category);
-            handleOpenAuth('login');
-          }}
-          isDark={isDark}
-          onToggleTheme={handleToggleTheme}
-        />
-      )}
-
-      {/* VIEW 2: AUTH VIEW (LOGIN & REGISTRATION) */}
-      {currentView === 'auth' && (
-        <div className="relative z-10">
-          <AuthView
-            initialMode={authMode}
-            onLoginSuccess={handleLoginSuccess}
-            onBackToLanding={() => setCurrentView('landing')}
-            isDark={isDark}
-          />
-        </div>
-      )}
-
-      {/* VIEW 3: AUTHENTICATED APP PORTAL */}
-      {currentView !== 'landing' && currentView !== 'auth' && isAuthenticated && (
-        <div className="relative z-10 flex flex-col min-h-screen">
-          {/* Header with Centered Menu & Top Right Account Settings */}
-          <Navbar
-            currentView={currentView}
-            onNavigate={handleNavigate}
-            user={user}
-            onLogout={handleLogout}
+        {/* VIEW 1: LANDING PAGE */}
+        {currentView === 'landing' && (
+          <LandingPage
+            onOpenAuth={handleOpenAuth}
+            onExploreRecipes={(category) => {
+              if (category) setSelectedRecipeCategory(category);
+              handleOpenAuth('login');
+            }}
             isDark={isDark}
             onToggleTheme={handleToggleTheme}
           />
+        )}
 
-          {/* Main Content Area */}
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {currentView === 'inicio' && (
-              <HomeView
-                user={user}
-                onUpdateUser={handleUpdateUser}
-                recipes={recipes}
-                projects={projects}
-                onNavigate={handleNavigate}
-                onSelectRecipe={setSelectedRecipe}
-                isDark={isDark}
-                onOpenBiometrics={() => setShowBiometricsModal(true)}
-              />
-            )}
+        {/* VIEW 2: AUTH VIEW (LOGIN & REGISTRATION) */}
+        {currentView === 'auth' && (
+          <div className="relative z-10">
+            <AuthView
+              initialMode={authMode}
+              onLoginSuccess={handleLoginSuccess}
+              onBackToLanding={() => setCurrentView('landing')}
+              isDark={isDark}
+            />
+          </div>
+        )}
 
-            {currentView === 'perfil' && (
-              <ProfileView
-                user={user}
-                onUpdateUser={handleUpdateUser}
-                isDark={isDark}
-              />
-            )}
+        {/* VIEW 3: AUTHENTICATED APP PORTAL */}
+        {currentView !== 'landing' && currentView !== 'auth' && isAuthenticated && (
+          <div className="relative z-10 flex flex-col min-h-screen">
+            {/* Header with Centered Menu & Top Right Account Settings */}
+            <Navbar
+              currentView={currentView}
+              onNavigate={handleNavigate}
+              user={user}
+              onLogout={handleLogout}
+              isDark={isDark}
+              onToggleTheme={handleToggleTheme}
+            />
 
-            {currentView === 'recetas' && (
-              <RecipesView
-                recipes={recipes}
-                onToggleFavorite={handleToggleFavoriteRecipe}
-                selectedCategory={selectedRecipeCategory}
-                onSelectCategory={setSelectedRecipeCategory}
-                selectedRecipe={selectedRecipe}
-                onSelectRecipe={setSelectedRecipe}
-                user={user}
-                isDark={isDark}
-              />
-            )}
+            {/* Main Content Area */}
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              {currentView === 'inicio' && (
+                <HomeView
+                  user={user}
+                  onUpdateUser={handleUpdateUser}
+                  recipes={recipes}
+                  projects={projects}
+                  onNavigate={handleNavigate}
+                  onSelectRecipe={setSelectedRecipe}
+                  isDark={isDark}
+                  onOpenBiometrics={() => setShowBiometricsModal(true)}
+                />
+              )}
 
-            {currentView === 'proyectos' && (
-              <ProjectsView
-                projects={projects}
-                onUpdateProjects={setProjects}
-                isDark={isDark}
-              />
-            )}
+              {currentView === 'perfil' && (
+                <ProfileView
+                  user={user}
+                  onUpdateUser={handleUpdateUser}
+                  isDark={isDark}
+                />
+              )}
 
-            {currentView === 'ayuda_ia' && (
-              <AiHelpView
-                user={user}
-                onUpdateUser={handleUpdateUser}
-                recipes={recipes}
-                onAddRecipe={handleAddRecipe}
-                projects={projects}
-                onAddProject={handleAddProject}
-                onNavigate={handleNavigate}
-                isDark={isDark}
-              />
-            )}
+              {currentView === 'recetas' && (
+                <RecipesView
+                  recipes={recipes}
+                  onToggleFavorite={handleToggleFavoriteRecipe}
+                  selectedCategory={selectedRecipeCategory}
+                  onSelectCategory={setSelectedRecipeCategory}
+                  selectedRecipe={selectedRecipe}
+                  onSelectRecipe={setSelectedRecipe}
+                  user={user}
+                  isDark={isDark}
+                />
+              )}
 
-            {currentView === 'configuracion' && (
-              <SettingsView
-                user={user}
-                onUpdateUser={handleUpdateUser}
-                onLogout={handleLogout}
-                isDark={isDark}
-                onToggleTheme={handleToggleTheme}
-              />
-            )}
-          </main>
-        </div>
-      )}
+              {currentView === 'proyectos' && (
+                <ProjectsView
+                  projects={projects}
+                  onUpdateProjects={setProjects}
+                  isDark={isDark}
+                />
+              )}
 
-      {/* MANDATORY BIOMETRICS ONBOARDING MODAL AFTER LOGIN */}
-      <BiometricsOnboardingModal
-        isOpen={showBiometricsModal}
-        user={user}
-        onComplete={handleBiometricsComplete}
-        isDark={isDark}
-      />
-    </div>
+              {currentView === 'ayuda_ia' && (
+                <AiHelpView
+                  user={user}
+                  onUpdateUser={handleUpdateUser}
+                  recipes={recipes}
+                  onAddRecipe={handleAddRecipe}
+                  projects={projects}
+                  onAddProject={handleAddProject}
+                  onNavigate={handleNavigate}
+                  isDark={isDark}
+                />
+              )}
+
+              {currentView === 'configuracion' && (
+                <SettingsView
+                  user={user}
+                  onUpdateUser={handleUpdateUser}
+                  onLogout={handleLogout}
+                  isDark={isDark}
+                  onToggleTheme={handleToggleTheme}
+                />
+              )}
+            </main>
+          </div>
+        )}
+
+        {/* MANDATORY BIOMETRICS ONBOARDING MODAL AFTER LOGIN */}
+        <BiometricsOnboardingModal
+          isOpen={showBiometricsModal}
+          user={user}
+          onComplete={handleBiometricsComplete}
+          isDark={isDark}
+        />
+      </div>
+    </LanguageProvider>
   );
 }

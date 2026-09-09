@@ -8,6 +8,7 @@ import { Logo } from './Logo';
 import { TestimonialsSection } from './TestimonialsSection';
 import { ContactForm } from './ContactForm';
 import { RecipeCategory } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface LandingPageProps {
   onOpenAuth: (mode?: 'login' | 'register') => void;
@@ -22,6 +23,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   isDark,
   onToggleTheme
 }) => {
+  const { t } = useLanguage();
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -45,34 +48,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               onClick={() => scrollToSection('hero-section')}
               className="px-3.5 py-1.5 text-xs lg:text-sm font-bold rounded-full text-stone-800 dark:text-gray-200 hover:text-[#0E5C36] dark:hover:text-[#70B873] hover:bg-emerald-50 dark:hover:bg-[#0D1912] transition-colors cursor-pointer"
             >
-              Inicio
+              {t.nav.home}
             </button>
             <button
               onClick={() => scrollToSection('beneficios-section')}
               className="px-3.5 py-1.5 text-xs lg:text-sm font-bold rounded-full text-stone-800 dark:text-gray-200 hover:text-[#0E5C36] dark:hover:text-[#70B873] hover:bg-emerald-50 dark:hover:bg-[#0D1912] transition-colors cursor-pointer"
             >
-              Pilares Nutricionales
+              {t.landing.pillarsTitle}
             </button>
             <button
               onClick={() => scrollToSection('testimonios-section')}
               className="px-3.5 py-1.5 text-xs lg:text-sm font-bold rounded-full text-stone-800 dark:text-gray-200 hover:text-[#0E5C36] dark:hover:text-[#70B873] hover:bg-emerald-50 dark:hover:bg-[#0D1912] transition-colors cursor-pointer"
             >
-              Testimonios
+              {t.landing.testimonialsTitle}
             </button>
             <button
               onClick={() => scrollToSection('contacto-section')}
               className="px-3.5 py-1.5 text-xs lg:text-sm font-bold rounded-full text-stone-800 dark:text-gray-200 hover:text-[#0E5C36] dark:hover:text-[#70B873] hover:bg-emerald-50 dark:hover:bg-[#0D1912] transition-colors cursor-pointer"
             >
-              Contacto
+              {t.landing.contactTitle}
             </button>
           </nav>
 
-          {/* TOP RIGHT: LOGIN ICON & ACTIONS */}
-          <div className="flex items-center gap-2.5">
+          {/* TOP RIGHT: THEME & ACTIONS */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Dark / Light Mode Toggle */}
             <button
               onClick={onToggleTheme}
-              title="Cambiar tema claro / oscuro"
+              title={isDark ? t.nav.themeLight : t.nav.themeDark}
               className="p-2.5 rounded-xl border border-stone-300 dark:border-gray-800 text-stone-800 dark:text-gray-300 hover:bg-white dark:hover:bg-[#16291E] transition-colors cursor-pointer shadow-sm"
             >
               {isDark ? <Sun className="w-4 h-4 text-[#70B873]" /> : <Moon className="w-4 h-4 text-[#0E5C36]" />}
@@ -82,11 +85,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <button
               id="top-right-btn-login"
               onClick={() => onOpenAuth('login')}
-              className="group px-4 py-2 text-xs sm:text-sm font-bold rounded-xl border border-[#0E5C36] dark:border-[#70B873]/30 text-[#0E5C36] dark:text-[#70B873] bg-white/60 dark:bg-transparent hover:bg-[#0E5C36] hover:text-white dark:hover:bg-[#70B873] dark:hover:text-[#0D1912] transition-all flex items-center gap-2 cursor-pointer shadow-sm"
-              title="Iniciar Sesión en NutriGrow"
+              className="group px-3 sm:px-4 py-2 text-xs sm:text-sm font-bold rounded-xl border border-[#0E5C36] dark:border-[#70B873]/30 text-[#0E5C36] dark:text-[#70B873] bg-white/60 dark:bg-transparent hover:bg-[#0E5C36] hover:text-white dark:hover:bg-[#70B873] dark:hover:text-[#0D1912] transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+              title="Iniciar Sesión"
             >
               <LogIn className="w-4 h-4 transition-transform group-hover:scale-110" />
-              <span>Iniciar Sesión</span>
+              <span>{t.auth.loginTab}</span>
             </button>
 
             {/* Quick Register CTA */}
@@ -96,7 +99,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               className="hidden sm:inline-flex px-4 py-2 text-xs sm:text-sm font-bold rounded-xl bg-[#0E5C36] text-white hover:bg-[#16472D] active:scale-95 transition-all shadow-md items-center gap-1.5 cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
-              <span>Registrarme</span>
+              <span>{t.auth.registerTab}</span>
             </button>
           </div>
         </div>
@@ -109,7 +112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border shadow-sm bg-white dark:bg-[#16291E]/90 border-[#0E5C36]/30 dark:border-[#70B873]/30 text-[#0E5C36] dark:text-[#70B873] backdrop-blur-md"
         >
           <Leaf className="w-3.5 h-3.5 text-[#0E5C36] dark:text-[#70B873]" />
-          <span>Nutrición Consciente & Autocultivo</span>
+          <span>{t.landing.heroBadge}</span>
         </div>
 
         {/* PROMINENT LARGE NUTRIGROW LOGO */}
@@ -121,9 +124,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <h1 className={`max-w-4xl text-3xl sm:text-5xl md:text-6xl font-extrabold font-display tracking-tight leading-[1.18] mt-4 ${
           isDark ? 'text-white' : 'text-[#102417]'
         }`}>
-          Alimenta tu Cuerpo, Cultiva tu Salud y{' '}
+          {t.landing.heroTitleStart}{' '}
           <span className={`relative inline-block ${isDark ? 'text-[#70B873]' : 'text-[#0E5C36]'}`}>
-            Crece sin Límites
+            {t.landing.heroTitleHighlight}
             <svg
               className={`absolute -bottom-2 left-0 w-full h-3 ${isDark ? 'text-[#70B873]/60' : 'text-[#0E5C36]/50'}`}
               viewBox="0 0 100 20"
@@ -137,14 +140,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <p className={`max-w-2xl text-base sm:text-lg md:text-xl mt-6 leading-relaxed font-semibold ${
           isDark ? 'text-gray-200' : 'text-[#1E3A2B]'
         }`}>
-          La plataforma integral que fusiona{' '}
-          <strong className={`font-black ${isDark ? 'text-white' : 'text-[#0E5C36]'}`}>
-            recetas inteligentes antiinflamatorias
-          </strong>,{' '}
-          <strong className={`font-black ${isDark ? 'text-white' : 'text-[#0E5C36]'}`}>
-            proyectos de autocultivo de microgreens
-          </strong>{' '}
-          y seguimiento nutricional personalizado en un entorno sereno y elegante.
+          {t.landing.heroDesc}
         </p>
 
         {/* Smooth CTA Navigation Buttons */}
@@ -155,7 +151,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             className="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-sm sm:text-base bg-[#0E5C36] text-white hover:bg-[#16472D] active:scale-98 transition-all duration-200 shadow-xl shadow-emerald-950/20 flex items-center justify-center gap-2.5 cursor-pointer"
           >
             <Sparkles className="w-5 h-5 text-[#86EFAC]" />
-            <span>Comenzar Ahora Gratis</span>
+            <span>{t.landing.btnStart}</span>
             <ArrowRight className="w-5 h-5" />
           </button>
 
@@ -169,17 +165,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             }`}
           >
             <UtensilsCrossed className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-            <span>Iniciar Sesión</span>
+            <span>{t.auth.loginTab}</span>
           </button>
         </div>
 
         {/* Interactive Features Floating Highlights */}
         <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-4xl w-full">
           {[
-            { icon: UtensilsCrossed, title: '+150 Recetas Vivas', desc: 'Desayunos, almuerzos & cenas' },
-            { icon: Sprout, title: 'Proyectos de Cultivo', desc: 'Microgreens y huertos en casa' },
-            { icon: HeartPulse, title: 'Control de Macros', desc: 'Proteínas, carbohidratos y grasas' },
-            { icon: Shield, title: '100% Personalizado', desc: 'Planes ajustados a tus metas' }
+            { icon: UtensilsCrossed, title: t.landing.statRecipes, desc: t.landing.statRecipesSub },
+            { icon: Sprout, title: t.landing.statProjects, desc: t.landing.statProjectsSub },
+            { icon: HeartPulse, title: t.landing.statMacros, desc: t.landing.statMacrosSub },
+            { icon: Shield, title: t.landing.statCustom, desc: t.landing.statCustomSub }
           ].map((item, i) => (
             <div
               key={i}
@@ -201,12 +197,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section id="beneficios-section" className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 bg-[#0E5C36]/10 dark:bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873] border border-[#0E5C36]/20 dark:border-transparent">
-            <Layers className="w-3.5 h-3.5" /> Metodología NutriGrow
+            <Layers className="w-3.5 h-3.5" /> {t.landing.pillarsTitle}
           </div>
           <h2 className={`text-3xl sm:text-4xl font-extrabold font-display ${
             isDark ? 'text-white' : 'text-[#102417]'
           }`}>
-            Todo lo que necesitas para tu <span className={isDark ? 'text-[#70B873]' : 'text-[#0E5C36]'}>transformación vital</span>
+            {t.landing.pillarsSubtitle}
           </h2>
         </div>
 
@@ -221,16 +217,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873] flex items-center justify-center mb-5">
                 <UtensilsCrossed className="w-6 h-6" />
               </div>
-              <h3 className={`text-xl font-bold font-display mb-2 ${isDark ? 'text-white' : 'text-[#102417]'}`}>Recetas Inteligentes & Desplegables</h3>
+              <h3 className={`text-xl font-bold font-display mb-2 ${isDark ? 'text-white' : 'text-[#102417]'}`}>
+                {t.landing.recipesCardTitle}
+              </h3>
               <p className={`text-sm leading-relaxed mb-4 font-medium ${isDark ? 'text-gray-300' : 'text-[#2D4536]'}`}>
-                Accede a categorías detalladas: desayunos energéticos con espirulina, almuerzos de salmón y quinoa, cenas depurativas, snacks saludables y calculadoras de macros en tiempo real.
+                {t.landing.recipesCardDesc}
               </p>
             </div>
             <button
               onClick={() => onOpenAuth('login')}
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0E5C36] dark:text-[#70B873] hover:underline mt-2 cursor-pointer"
             >
-              <span>Explorar Recetario</span>
+              <span>{t.landing.exploreCookbook}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -245,16 +243,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873] flex items-center justify-center mb-5">
                 <Sprout className="w-6 h-6" />
               </div>
-              <h3 className={`text-xl font-bold font-display mb-2 ${isDark ? 'text-white' : 'text-[#102417]'}`}>Mis Proyectos & Huerto Urbano</h3>
+              <h3 className={`text-xl font-bold font-display mb-2 ${isDark ? 'text-white' : 'text-[#102417]'}`}>
+                {t.landing.projectsCardTitle}
+              </h3>
               <p className={`text-sm leading-relaxed mb-4 font-medium ${isDark ? 'text-gray-300' : 'text-[#2D4536]'}`}>
-                Sigue proyectos interactivos paso a paso como cultivo de microgreens en tu cocina, retos de 21 días sin azúcares refinados y sistemas de batch cooking semanal.
+                {t.landing.projectsCardDesc}
               </p>
             </div>
             <button
               onClick={() => onOpenAuth('login')}
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0E5C36] dark:text-[#70B873] hover:underline mt-2 cursor-pointer"
             >
-              <span>Ver Proyectos</span>
+              <span>{t.landing.seeProjects}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -269,16 +269,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873] flex items-center justify-center mb-5">
                 <HeartPulse className="w-6 h-6" />
               </div>
-              <h3 className={`text-xl font-bold font-display mb-2 ${isDark ? 'text-white' : 'text-[#102417]'}`}>Perfil & Progreso Diario</h3>
+              <h3 className={`text-xl font-bold font-display mb-2 ${isDark ? 'text-white' : 'text-[#102417]'}`}>
+                {t.landing.profileCardTitle}
+              </h3>
               <p className={`text-sm leading-relaxed mb-4 font-medium ${isDark ? 'text-gray-300' : 'text-[#2D4536]'}`}>
-                Monitorea tu hidratación, balance calórico, ingesta de proteínas y constancia diaria con insignias de logros y gráficos de evolución corporal.
+                {t.landing.profileCardDesc}
               </p>
             </div>
             <button
               onClick={() => onOpenAuth('login')}
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0E5C36] dark:text-[#70B873] hover:underline mt-2 cursor-pointer"
             >
-              <span>Conocer Mi Perfil</span>
+              <span>{t.landing.knowProfile}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -304,24 +306,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-stone-700 dark:text-gray-300">
             <button onClick={() => scrollToSection('hero-section')} className="hover:text-[#0E5C36] dark:hover:text-[#70B873] cursor-pointer">
-              Inicio
+              {t.nav.home}
             </button>
             <button onClick={() => scrollToSection('beneficios-section')} className="hover:text-[#0E5C36] dark:hover:text-[#70B873] cursor-pointer">
-              Pilares
+              {t.landing.pillarsTitle}
             </button>
             <button onClick={() => scrollToSection('testimonios-section')} className="hover:text-[#0E5C36] dark:hover:text-[#70B873] cursor-pointer">
-              Testimonios
+              {t.landing.testimonialsTitle}
             </button>
             <button onClick={() => scrollToSection('contacto-section')} className="hover:text-[#0E5C36] dark:hover:text-[#70B873] cursor-pointer">
-              Contacto
+              {t.landing.contactTitle}
             </button>
             <button onClick={() => onOpenAuth('login')} className="hover:text-[#0E5C36] dark:hover:text-[#70B873] font-bold text-[#0E5C36] dark:text-[#70B873] cursor-pointer">
-              Acceso Miembros
+              {t.landing.membersAccess}
             </button>
           </div>
 
           <p className="text-xs text-stone-500 dark:text-gray-400 text-center font-medium">
-            © {new Date().getFullYear()} NutriGrow. Todos los derechos reservados.
+            © {new Date().getFullYear()} NutriGrow. {t.landing.allRightsReserved}
           </p>
         </div>
       </footer>

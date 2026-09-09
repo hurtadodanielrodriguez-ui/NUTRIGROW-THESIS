@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { 
   Lock, Mail, User, ArrowRight, ArrowLeft, CheckCircle2, 
   Sparkles, Eye, EyeOff, ShieldCheck, Target, Activity, Zap,
-  Menu, X, Globe, Check, BookOpen, Sprout
+  Menu, X, BookOpen, Sprout
 } from 'lucide-react';
 import { Logo } from './Logo';
-import { UserProfile, AuthMode, AppLanguage } from '../types';
-import { SUPPORTED_LANGUAGES, getTranslation } from '../utils/translations';
+import { UserProfile, AuthMode } from '../types';
+import { useLanguage } from '../context/LanguageContext';
+import { GoogleAccountChooser, SelectedGoogleAccount } from './GoogleAccountChooser';
 import confetti from 'canvas-confetti';
 
 interface AuthViewProps {
@@ -22,15 +23,13 @@ export const AuthView: React.FC<AuthViewProps> = ({
   onBackToLanding,
   isDark = false
 }) => {
+  const { language, t } = useLanguage();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [loadingGoogle, setLoadingGoogle] = useState(false);
-  const [authLang, setAuthLang] = useState<AppLanguage>('es');
+  const [showGoogleChooser, setShowGoogleChooser] = useState(false);
   const [statusNotice, setStatusNotice] = useState('');
   const [error, setError] = useState('');
-
-  const t = getTranslation(authLang);
 
   // Login form state - completely empty so user enters their own credentials
   const [loginEmail, setLoginEmail] = useState('');
@@ -44,60 +43,53 @@ export const AuthView: React.FC<AuthViewProps> = ({
   const [regActivity, setRegActivity] = useState<'sedentario' | 'moderado' | 'activo' | 'muy_activo'>('activo');
   const [termsAccepted, setTermsAccepted] = useState(true);
 
-  const handleLanguageChange = (lang: AppLanguage) => {
-    setAuthLang(lang);
-    try {
-      localStorage.setItem('nutrigrow_lang', lang);
-    } catch {}
-  };
-
   const handleGoogleSignIn = () => {
     setError('');
     setStatusNotice('');
-    setLoadingGoogle(true);
+    setShowGoogleChooser(true);
+  };
 
-    setTimeout(() => {
-      setLoadingGoogle(false);
-      try {
-        confetti({
-          particleCount: 75,
-          spread: 75,
-          origin: { y: 0.6 },
-          colors: ['#4285F4', '#34A853', '#FBBC05', '#EA4335']
-        });
-      } catch {}
+  const handleSelectGoogleAccount = (account: SelectedGoogleAccount) => {
+    setShowGoogleChooser(false);
+    try {
+      confetti({
+        particleCount: 75,
+        spread: 75,
+        origin: { y: 0.6 },
+        colors: ['#4285F4', '#34A853', '#FBBC05', '#EA4335']
+      });
+    } catch {}
 
-      const googleUser: UserProfile = {
-        id: 'usr_google_' + Date.now(),
-        name: 'Usuario Google',
-        email: 'usuario.nutrigrow@gmail.com',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80',
-        bio: 'Miembro NutriGrow conectado con Google. Enfocado en nutrición inteligente, cultivo casero y vitalidad diaria.',
-        goal: 'salud_integral',
-        activityLevel: 'activo',
-        heightCm: 172,
-        weightKg: 68.0,
-        targetWeightKg: 65.0,
-        dailyCalories: 2200,
-        consumedCalories: 1550,
-        proteinGrams: 105,
-        targetProteinGrams: 130,
-        carbsGrams: 160,
-        targetCarbsGrams: 210,
-        fatGrams: 48,
-        targetFatGrams: 65,
-        waterGlasses: 6,
-        targetWaterGlasses: 8,
-        streakDays: 3,
-        joinedDate: 'Septiembre 2026',
-        notificationsEnabled: true,
-        theme: isDark ? 'dark' : 'light',
-        hasCompletedBiometrics: false,
-        language: authLang
-      };
+    const googleUser: UserProfile = {
+      id: 'usr_google_' + Date.now(),
+      name: account.name,
+      email: account.email,
+      avatar: account.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(account.name)}&background=0E5C36&color=fff&size=200`,
+      bio: `Miembro NutriGrow conectado con Google (${account.email}). Enfocado en nutrición inteligente, cultivo casero y vitalidad diaria.`,
+      goal: 'salud_integral',
+      activityLevel: 'activo',
+      heightCm: 172,
+      weightKg: 68.0,
+      targetWeightKg: 65.0,
+      dailyCalories: 2200,
+      consumedCalories: 1550,
+      proteinGrams: 105,
+      targetProteinGrams: 130,
+      carbsGrams: 160,
+      targetCarbsGrams: 210,
+      fatGrams: 48,
+      targetFatGrams: 65,
+      waterGlasses: 6,
+      targetWaterGlasses: 8,
+      streakDays: 3,
+      joinedDate: 'Septiembre 2026',
+      notificationsEnabled: true,
+      theme: isDark ? 'dark' : 'light',
+      hasCompletedBiometrics: false,
+      language: language
+    };
 
-      onLoginSuccess(googleUser);
-    }, 700);
+    onLoginSuccess(googleUser);
   };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -154,7 +146,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
         notificationsEnabled: true,
         theme: isDark ? 'dark' : 'light',
         hasCompletedBiometrics: false,
-        language: authLang
+        language: language
       };
 
       onLoginSuccess(user);
@@ -212,7 +204,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
         notificationsEnabled: true,
         theme: isDark ? 'dark' : 'light',
         hasCompletedBiometrics: false,
-        language: authLang
+        language: language
       };
 
       onLoginSuccess(newUser);
@@ -250,7 +242,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
         notificationsEnabled: true,
         theme: isDark ? 'dark' : 'light',
         hasCompletedBiometrics: false,
-        language: authLang
+        language: language
       };
       onLoginSuccess(demoUser);
     }, 400);
@@ -258,8 +250,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   return (
     <div className="min-h-[90vh] flex flex-col items-center justify-center p-4 sm:p-6 py-10 relative">
-      {/* TOP BAR: BACK TO LANDING ON THE LEFT + LANGUAGE TOGGLES ON THE RIGHT */}
-      <div className="w-full max-w-xl flex items-center justify-between gap-3 mb-5">
+      {/* TOP BAR: BACK TO LANDING */}
+      <div className="w-full max-w-xl flex items-center justify-start mb-5">
         <button
           type="button"
           onClick={onBackToLanding}
@@ -273,26 +265,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
           <ArrowLeft className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
           <span>{t.auth.backToHome}</span>
         </button>
-
-        {/* Quick Language Selector */}
-        <div className="flex items-center gap-1 bg-white dark:bg-[#16291E] p-1 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm text-xs">
-          {SUPPORTED_LANGUAGES.map((lang) => (
-            <button
-              key={lang.code}
-              type="button"
-              id={`auth-lang-btn-${lang.code}`}
-              onClick={() => handleLanguageChange(lang.code)}
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                authLang === lang.code
-                  ? 'bg-[#0E5C36] text-white shadow-xs'
-                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-              }`}
-            >
-              <span>{lang.flag}</span>
-              <span className="uppercase">{lang.code}</span>
-            </button>
-          ))}
-        </div>
       </div>
 
       <div
@@ -356,36 +328,32 @@ export const AuthView: React.FC<AuthViewProps> = ({
             type="button"
             id="btn-auth-google-signin"
             onClick={handleGoogleSignIn}
-            disabled={loadingGoogle || loading}
+            disabled={loading}
             className={`w-full py-3 px-4 rounded-2xl font-bold text-sm border flex items-center justify-center gap-3 transition-all duration-200 shadow-sm cursor-pointer hover:shadow-md active:scale-[0.99] ${
               isDark
                 ? 'bg-[#0D1912] border-[#70B873]/30 text-white hover:bg-[#152e20] hover:border-[#70B873]'
                 : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
             }`}
           >
-            {loadingGoogle ? (
-              <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                />
-              </svg>
-            )}
-            <span>{loadingGoogle ? t.auth.connectingGoogle : t.auth.googleSignIn}</span>
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+              />
+            </svg>
+            <span>{t.auth.googleSignIn}</span>
           </button>
 
           {/* Divider */}
@@ -665,6 +633,14 @@ export const AuthView: React.FC<AuthViewProps> = ({
           <span>Tus datos de salud y privacidad están 100% protegidos</span>
         </div>
       </div>
+
+      {/* Real Google Account Chooser Modal */}
+      <GoogleAccountChooser
+        isOpen={showGoogleChooser}
+        onClose={() => setShowGoogleChooser(false)}
+        onSelectAccount={handleSelectGoogleAccount}
+        isDark={isDark}
+      />
     </div>
   );
 };

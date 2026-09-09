@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { UserProfile, Recipe, Project, ViewMode, RecipeCategory } from '../../types';
 import { generatePersonalizedPlan, calculateAgeFromBirthDate } from '../../utils/nutritionCalculations';
+import { useLanguage } from '../../context/LanguageContext';
 import confetti from 'canvas-confetti';
 
 interface HomeViewProps {
@@ -30,6 +31,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   isDark,
   onOpenBiometrics
 }) => {
+  const { t } = useLanguage();
   const [activeProject, setActiveProject] = useState<Project>(
     projects.find((p) => p.status === 'en_progreso') || projects[0]
   );
@@ -95,13 +97,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-white/15 backdrop-blur-md text-emerald-100">
               <Sparkles className="w-3.5 h-3.5 text-[#70B873]" />
-              <span>Día {user.streakDays} de Nutrición Consciente</span>
+              <span>{t.home.streakBadge.replace('{days}', String(user.streakDays))}</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold font-display">
-              ¡Hola de nuevo, {user?.name ? user.name.split(' ')[0] : 'Amigo'}! 🌱
+              {t.home.greeting.replace('{name}', user?.name ? user.name.split(' ')[0] : 'Amigo')} 🌱
             </h1>
             <p className="text-xs sm:text-sm text-emerald-100 max-w-xl leading-relaxed">
-              Hoy has completado el <strong>{caloriePercentage}%</strong> de tu meta calórica. Tus brotes vivos de microgreens están listos para tu ensalada de hoy.
+              {t.home.summaryDesc}
             </p>
           </div>
 
@@ -111,21 +113,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm bg-gradient-to-r from-amber-400 to-amber-500 text-emerald-950 hover:brightness-105 transition-all shadow-md flex items-center gap-2 cursor-pointer ring-2 ring-white/40"
             >
               <Sparkles className="w-4 h-4 text-emerald-950" />
-              <span>Ayuda por IA</span>
+              <span>{t.nav.aiHelp}</span>
             </button>
             <button
               onClick={() => onNavigate('recetas')}
               className="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-white text-[#0E5C36] hover:bg-emerald-50 transition-all shadow-md flex items-center gap-2 cursor-pointer"
             >
               <UtensilsCrossed className="w-4 h-4 text-[#0E5C36]" />
-              <span>Ver Recetario</span>
+              <span>{t.nav.recipes}</span>
             </button>
             <button
               onClick={() => onNavigate('proyectos')}
               className="px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-white/20 border border-white/30 text-white hover:bg-white/30 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Sprout className="w-4 h-4 text-[#70B873]" />
-              <span>Mis Proyectos</span>
+              <span>{t.nav.projects}</span>
             </button>
           </div>
         </div>
@@ -144,13 +146,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873] mb-2">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Plan Nutricional Calibrado</span>
+              <span>{t.home.biometricsSummaryTitle}</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black font-display tracking-tight text-[#0E5C36] dark:text-[#70B873]">
-              Tu Plan Determinado según tus Datos Personales 🌱
+              {t.home.biometricsSummaryTitle} 🌱
             </h2>
             <p className={`text-xs sm:text-sm mt-0.5 ${isDark ? 'text-gray-300' : 'text-[#2D4536]'}`}>
-              Parámetros y metas calculadas a partir de tu fecha de nacimiento, estatura y peso actual.
+              {t.home.summaryDesc}
             </p>
           </div>
 
@@ -164,7 +166,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>Modificar Biometría</span>
+              <span>{t.home.openBiometricsBtn}</span>
             </button>
           )}
         </div>
@@ -174,20 +176,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-[#122218] border-[#70B873]/20' : 'bg-[#F9F8F5] border-emerald-900/10'}`}>
             <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-1">
               <Calendar className="w-3.5 h-3.5 text-[#0E5C36] dark:text-[#70B873]" />
-              <span className="font-semibold">Edad Calculada</span>
+              <span className="font-semibold">{t.home.age}</span>
             </div>
             <p className="text-lg font-black text-gray-900 dark:text-white">
               {displayAge} <span className="text-xs font-medium text-gray-500">años</span>
             </p>
             <p className="text-[10px] text-gray-400 truncate">
-              {user.birthDate ? `F. Nac: ${user.birthDate}` : 'Nacimiento registrado'}
+              {user.birthDate ? `F. Nac: ${user.birthDate}` : 'Nacimiento'}
             </p>
           </div>
 
           <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-[#122218] border-[#70B873]/20' : 'bg-[#F9F8F5] border-emerald-900/10'}`}>
             <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-1">
               <Ruler className="w-3.5 h-3.5 text-[#0E5C36] dark:text-[#70B873]" />
-              <span className="font-semibold">Estatura</span>
+              <span className="font-semibold">{t.home.height}</span>
             </div>
             <p className="text-lg font-black text-gray-900 dark:text-white">
               {user.heightCm} <span className="text-xs font-medium text-gray-500">cm</span>
@@ -200,20 +202,20 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-[#122218] border-[#70B873]/20' : 'bg-[#F9F8F5] border-emerald-900/10'}`}>
             <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-1">
               <Scale className="w-3.5 h-3.5 text-[#0E5C36] dark:text-[#70B873]" />
-              <span className="font-semibold">Peso Actual</span>
+              <span className="font-semibold">{t.home.weight}</span>
             </div>
             <p className="text-lg font-black text-gray-900 dark:text-white">
               {user.weightKg} <span className="text-xs font-medium text-gray-500">kg</span>
             </p>
             <p className="text-[10px] text-gray-400">
-              Objetivo: {user.targetWeightKg} kg
+              {t.home.target}: {user.targetWeightKg} kg
             </p>
           </div>
 
           <div className={`p-3.5 rounded-2xl border ${isDark ? 'bg-[#122218] border-[#70B873]/20' : 'bg-[#F9F8F5] border-emerald-900/10'}`}>
             <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-1">
               <HeartPulse className="w-3.5 h-3.5 text-[#0E5C36] dark:text-[#70B873]" />
-              <span className="font-semibold">IMC Estimado</span>
+              <span className="font-semibold">{t.home.bmi}</span>
             </div>
             <p className="text-lg font-black text-[#0E5C36] dark:text-[#70B873]">
               {plan.bmi}
@@ -237,7 +239,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-bold text-gray-600 dark:text-gray-300 flex items-center gap-1.5">
                 <Flame className="w-4 h-4 text-amber-500" />
-                Gasto Calórico Objetivo
+                {t.home.dailyCalorieTitle}
               </span>
               <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                 TDEE: {plan.tdee} kcal
@@ -247,7 +249,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               {plan.dailyCalories} <span className="text-xs font-bold text-gray-500">kcal/día</span>
             </p>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-              Tasa Metabólica Basal (TMB): {plan.bmr} kcal en reposo celular.
+              TMB: {plan.bmr} kcal.
             </p>
           </div>
 
@@ -255,19 +257,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className={`p-4 rounded-2xl border ${isDark ? 'bg-[#152B1E] border-[#70B873]/30' : 'bg-emerald-50/70 border-emerald-900/15'}`}>
             <span className="text-xs font-bold text-gray-600 dark:text-gray-300 flex items-center gap-1.5 mb-2">
               <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              Macros Diarios Determinados
+              {t.home.progressTitle}
             </span>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="p-2 rounded-xl bg-white/70 dark:bg-[#102419]">
-                <p className="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-400">Proteína</p>
+                <p className="text-[10px] uppercase font-bold text-emerald-700 dark:text-emerald-400">{t.home.protein}</p>
                 <p className="text-sm font-black">{plan.proteinGrams}g</p>
               </div>
               <div className="p-2 rounded-xl bg-white/70 dark:bg-[#102419]">
-                <p className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-400">Carbos</p>
+                <p className="text-[10px] uppercase font-bold text-blue-700 dark:text-blue-400">{t.home.carbs}</p>
                 <p className="text-sm font-black">{plan.carbsGrams}g</p>
               </div>
               <div className="p-2 rounded-xl bg-white/70 dark:bg-[#102419]">
-                <p className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-400">Grasas</p>
+                <p className="text-[10px] uppercase font-bold text-amber-700 dark:text-amber-400">{t.home.fat}</p>
                 <p className="text-sm font-black">{plan.fatGrams}g</p>
               </div>
             </div>
@@ -277,13 +279,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className={`p-4 rounded-2xl border ${isDark ? 'bg-[#152B1E] border-[#70B873]/30' : 'bg-emerald-50/70 border-emerald-900/15'}`}>
             <span className="text-xs font-bold text-gray-600 dark:text-gray-300 flex items-center gap-1.5 mb-1">
               <Droplets className="w-4 h-4 text-sky-500" />
-              Hidratación Recomendada
+              {t.home.hydrationTitle}
             </span>
             <p className="text-2xl font-black text-sky-600 dark:text-sky-400">
-              {plan.waterGlasses} <span className="text-xs font-bold text-gray-500">vasos (~{plan.waterLiters} Litros)</span>
+              {plan.waterGlasses} <span className="text-xs font-bold text-gray-500">vasos (~{plan.waterLiters} L)</span>
             </p>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
-              Calculado a razón de 35 ml de agua pura por kg de peso corporal.
+              35 ml / kg.
             </p>
           </div>
         </div>
@@ -293,7 +295,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800">
             <p className="text-xs font-extrabold uppercase tracking-wider text-[#0E5C36] dark:text-[#70B873] mb-2.5 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
-              Pautas Naturales Adaptadas a tu Edad y Perfil:
+              {t.home.guidelinesTitle}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {plan.recommendations.map((rec, i) => (
@@ -317,7 +319,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Calorías Diarias
+              {t.home.dailyCalorieTitle}
             </span>
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
               <Flame className="w-4 h-4" />
@@ -335,7 +337,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               style={{ width: `${caloriePercentage}%` }}
             />
           </div>
-          <span className="text-[11px] text-gray-400 mt-1 block">{caloriePercentage}% alcanzado</span>
+          <span className="text-[11px] text-gray-400 mt-1 block">{caloriePercentage}% {t.home.target}</span>
         </div>
 
         {/* Protein Card */}
@@ -346,7 +348,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Proteína Magra
+              {t.home.protein}
             </span>
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-[#0E5C36] dark:text-[#70B873] flex items-center justify-center">
               <Target className="w-4 h-4" />
@@ -364,7 +366,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               style={{ width: `${proteinPercentage}%` }}
             />
           </div>
-          <span className="text-[11px] text-gray-400 mt-1 block">{proteinPercentage}% meta alcanzada</span>
+          <span className="text-[11px] text-gray-400 mt-1 block">{proteinPercentage}% {t.home.target}</span>
         </div>
 
         {/* Carbs & Fats Card */}
@@ -375,7 +377,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Carbos & Grasas
+              {t.home.carbs} & {t.home.fat}
             </span>
             <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
               <Apple className="w-4 h-4" />
@@ -406,7 +408,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-              Hidratación Diaria
+              {t.home.hydrationTitle}
             </span>
             <div className="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center">
               <Droplets className="w-4 h-4" />
@@ -422,6 +424,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex items-center gap-2 mt-3">
             <button
               onClick={handleWaterSubtract}
+              title={t.home.removeGlass}
               className="w-8 h-8 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[#0D1912] cursor-pointer"
             >
               <Minus className="w-3.5 h-3.5" />
@@ -432,7 +435,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               className="flex-1 py-1.5 px-3 rounded-xl bg-cyan-600 text-white text-xs font-bold hover:bg-cyan-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+1 Vaso</span>
+              <span>{t.home.addGlass}</span>
             </button>
           </div>
         </div>
@@ -445,22 +448,22 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <UtensilsCrossed className="w-5 h-5 text-[#0E5C36] dark:text-[#70B873]" />
-              <h2 className="text-xl font-bold font-display">Planes y Recetas para Hoy</h2>
+              <h2 className="text-xl font-bold font-display">{t.home.recommendedMealsTitle}</h2>
             </div>
             <button
               onClick={() => onNavigate('recetas')}
               className="text-xs font-bold text-[#0E5C36] dark:text-[#70B873] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              <span>Ver todas</span>
+              <span>{t.common.all}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { meal: 'Desayuno', recipe: recommendedBreakfast, time: '08:00 AM' },
-              { meal: 'Almuerzo', recipe: recommendedLunch, time: '01:30 PM' },
-              { meal: 'Cena', recipe: recommendedDinner, time: '08:00 PM' }
+              { meal: t.home.breakfast, recipe: recommendedBreakfast, time: '08:00 AM' },
+              { meal: t.home.lunch, recipe: recommendedLunch, time: '01:30 PM' },
+              { meal: t.home.dinner, recipe: recommendedDinner, time: '08:00 PM' }
             ].map(({ meal, recipe, time }, i) => (
               <div
                 key={i}
@@ -494,7 +497,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </h4>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 flex items-center justify-between">
                   <span>⏱ {recipe.prepTimeMinutes} min</span>
-                  <span className="font-semibold text-emerald-600 dark:text-[#70B873]">{recipe.protein}g proteína</span>
+                  <span className="font-semibold text-emerald-600 dark:text-[#70B873]">{recipe.protein}g {t.home.protein.toLowerCase()}</span>
                 </p>
               </div>
             ))}
@@ -506,13 +509,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sprout className="w-5 h-5 text-[#0E5C36] dark:text-[#70B873]" />
-              <h2 className="text-xl font-bold font-display">Proyecto Activo</h2>
+              <h2 className="text-xl font-bold font-display">{t.home.activeProjectTitle}</h2>
             </div>
             <button
               onClick={() => onNavigate('proyectos')}
               className="text-xs font-bold text-[#0E5C36] dark:text-[#70B873] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              <span>Ver todos</span>
+              <span>{t.home.viewAllProjects}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -528,7 +531,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   {activeProject.category}
                 </span>
                 <span className="text-xs font-bold text-[#0E5C36] dark:text-[#70B873]">
-                  {activeProject.progress}% completado
+                  {activeProject.progress}% {t.home.progress.toLowerCase()}
                 </span>
               </div>
 
@@ -550,7 +553,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               {/* Task list preview */}
               <div className="space-y-2 pt-1">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  Próximas Tareas
+                  {t.projects.tasksTitle}
                 </p>
                 {activeProject.tasks.slice(0, 3).map((task) => (
                   <div
@@ -573,7 +576,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onClick={() => onNavigate('proyectos')}
                 className="w-full py-2.5 rounded-xl font-bold text-xs bg-[#0E5C36] text-white hover:bg-[#16472D] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <span>Gestionar Proyecto Completo</span>
+                <span>{t.home.viewAllProjects}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -594,10 +597,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
         <div className="flex-1 text-center sm:text-left">
           <h4 className="font-bold text-sm font-display text-[#0E5C36] dark:text-[#70B873]">
-            Consejo Natural de Hoy: Microgreens de Brócoli
+            {t.home.dailyTipTitle}
           </h4>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed">
-            Los brotes tiernos de brócoli contienen hasta <strong>50 veces más sulforafano</strong> que el brócoli maduro, un potente activador celular antioxidante. Añade 2 cucharadas a tu tazón de quinoa para maximizar tus defensas.
+            {t.home.dailyTipDesc}
           </p>
         </div>
       </div>

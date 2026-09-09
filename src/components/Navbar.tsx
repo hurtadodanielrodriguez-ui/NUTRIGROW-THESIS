@@ -3,10 +3,11 @@ import {
   Home, User, UtensilsCrossed, Sprout, Settings, 
   ChevronDown, Sun, Moon, LogOut, Sparkles, Coffee, 
   Salad, MoonStar, Apple, GlassWater, Calculator,
-  Sliders, Shield, Bell, Check, Menu, X, ChevronRight
+  Sliders, Shield, Bell, Check, Menu, X, ChevronRight, Globe
 } from 'lucide-react';
 import { Logo } from './Logo';
 import { ViewMode, RecipeCategory, UserProfile } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface NavbarProps {
   currentView: ViewMode;
@@ -25,6 +26,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   isDark,
   onToggleTheme
 }) => {
+  const { t } = useLanguage();
   const [recipesDropdownOpen, setRecipesDropdownOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -58,50 +60,50 @@ export const Navbar: React.FC<NavbarProps> = ({
   const recipeDropdownItems = [
     {
       id: 'todos' as RecipeCategory,
-      title: 'Todos los Platillos',
-      description: 'Explora toda la colección vegetal viva',
+      title: t.nav.categories.all,
+      description: t.recipes.allDishes,
       icon: UtensilsCrossed,
       color: '#0E5C36'
     },
     {
       id: 'desayunos' as RecipeCategory,
-      title: 'Desayunos Energéticos',
-      description: 'Avena con espirulina, bowls y tostadas',
+      title: t.nav.categories.breakfast,
+      description: t.recipes.breakfasts,
       icon: Coffee,
       color: '#70B873'
     },
     {
       id: 'almuerzos' as RecipeCategory,
-      title: 'Almuerzos Balanceados',
-      description: 'Salmón salvaje, quinoa real y ensaladas',
+      title: t.nav.categories.lunch,
+      description: t.recipes.lunches,
       icon: Salad,
       color: '#0E5C36'
     },
     {
       id: 'cenas' as RecipeCategory,
-      title: 'Cenas Ligeras',
-      description: 'Cremas depurativas y proteínas magras',
+      title: t.nav.categories.dinner,
+      description: t.recipes.dinners,
       icon: MoonStar,
       color: '#70B873'
     },
     {
       id: 'snacks' as RecipeCategory,
-      title: 'Snacks Saludables',
-      description: 'Energy balls de matcha, semillas y nueces',
+      title: t.nav.categories.snacks,
+      description: t.recipes.snacks,
       icon: Apple,
       color: '#0E5C36'
     },
     {
       id: 'bebidas' as RecipeCategory,
-      title: 'Bebidas & Batidos Detox',
-      description: 'NutriGlow Elixir e infusiones alcalinas',
+      title: t.nav.categories.drinks,
+      description: t.recipes.drinks,
       icon: GlassWater,
       color: '#70B873'
     },
     {
       id: 'macro_calculator' as RecipeCategory,
-      title: 'Calculadora de Macros',
-      description: 'Ajusta porciones según tus objetivos diarios',
+      title: t.nav.categories.calculator,
+      description: t.recipes.calculator,
       icon: Calculator,
       color: '#F4D06F'
     }
@@ -226,7 +228,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Computer Menu Items transferred into Mobile Drawer */}
               <div className="space-y-1">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-1.5">
-                  Menú Principal
+                  {t.nav.menu}
                 </p>
 
                 {/* 1. Inicio */}
@@ -243,7 +245,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <Home className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-                  <span>Inicio</span>
+                  <span>{t.nav.home}</span>
                 </button>
 
                 {/* 2. Recetas with collapsible categories */}
@@ -262,7 +264,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }`}
                     >
                       <UtensilsCrossed className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-                      <span>Recetas</span>
+                      <span>{t.nav.recipes}</span>
                     </button>
                     <button
                       type="button"
@@ -309,7 +311,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <Sprout className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-                  <span>Mis Proyectos</span>
+                  <span>{t.nav.projects}</span>
                 </button>
 
                 {/* 4. Ayuda por IA */}
@@ -326,7 +328,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <Sparkles className="w-4 h-4 text-amber-400" />
-                  <span className="flex-1">Ayuda por IA</span>
+                  <span className="flex-1">{t.nav.aiHelp}</span>
                   <span className="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873]">
                     Gemini
                   </span>
@@ -346,7 +348,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <User className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-                  <span>Mi Perfil & Biometría</span>
+                  <span>{t.nav.profile}</span>
                 </button>
 
                 {/* 6. Configuración de Cuenta */}
@@ -363,13 +365,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <Settings className="w-4 h-4 text-[#0E5C36] dark:text-[#70B873]" />
-                  <span>Configuración de Cuenta</span>
+                  <span>{t.nav.settings}</span>
                 </button>
               </div>
             </div>
 
             {/* Drawer Bottom Actions: Theme Toggle & Logout */}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2 mt-4">
+            <div className="pt-3 border-t border-gray-200 dark:border-gray-800 space-y-2 mt-3">
               <button
                 type="button"
                 onClick={onToggleTheme}
@@ -377,9 +379,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <div className="flex items-center gap-2.5">
                   {isDark ? <Sun className="w-4 h-4 text-[#70B873]" /> : <Moon className="w-4 h-4 text-[#0E5C36]" />}
-                  <span>{isDark ? 'Modo Oscuro' : 'Modo Claro'}</span>
+                  <span>{isDark ? t.nav.themeDark : t.nav.themeLight}</span>
                 </div>
-                <span className="text-[10px] text-gray-400 font-bold uppercase">Cambiar</span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase">{t.nav.theme}</span>
               </button>
 
               <button
@@ -391,7 +393,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Cerrar Sesión</span>
+                <span>{t.nav.logout}</span>
               </button>
             </div>
           </aside>
@@ -426,7 +428,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Home className="w-4 h-4" />
-            <span>Inicio</span>
+            <span>{t.nav.home}</span>
           </button>
 
           {/* 2. RECETAS WITH HOVER DROPDOWN MENU */}
@@ -446,7 +448,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <UtensilsCrossed className="w-4 h-4" />
-              <span>Recetas</span>
+              <span>{t.nav.recipes}</span>
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${recipesDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -462,10 +464,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 mb-1 flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#0E5C36] dark:text-[#70B873]">
-                    Categorías & Características
+                    {t.recipes.filterByCategory}
                   </span>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873] font-semibold">
-                    7 Módulos
+                    7 {t.recipes.badge}
                   </span>
                 </div>
 
@@ -519,8 +521,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Sprout className="w-4 h-4" />
-            <span className="hidden sm:inline">Mis</span>
-            <span>Proyectos</span>
+            <span>{t.nav.projects}</span>
           </button>
 
           {/* 4. AYUDA POR IA (Gemini-Powered Natural & Nutrition Assistant) */}
@@ -534,7 +535,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Sparkles className={`w-4 h-4 ${currentView === 'ayuda_ia' ? 'text-amber-300 animate-spin-slow' : 'text-[#0E5C36] dark:text-[#70B873]'}`} />
-            <span className="font-extrabold tracking-tight">Ayuda por IA</span>
+            <span className="font-extrabold tracking-tight">{t.nav.aiHelp}</span>
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#70B873] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0E5C36] dark:bg-[#70B873]"></span>
@@ -552,17 +553,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <User className="w-4 h-4" />
-            <span>Perfil</span>
+            <span>{t.nav.profile}</span>
           </button>
         </nav>
 
-        {/* RIGHT: CONFIGURACIÓN DE CUENTA (PERSON LOGO AS REQUESTED) + THEME TOGGLE */}
+        {/* RIGHT: THEME TOGGLE + CONFIGURACIÓN DE CUENTA */}
         <div className="flex items-center gap-2.5 shrink-0">
           {/* Theme Toggle Button */}
           <button
             onClick={onToggleTheme}
             id="btn-toggle-theme-navbar"
-            title="Cambiar tema"
+            title={isDark ? t.nav.themeLight : t.nav.themeDark}
             className="p-2 rounded-xl border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#16291E] transition-colors cursor-pointer"
           >
             {isDark ? <Sun className="w-4 h-4 text-[#70B873]" /> : <Moon className="w-4 h-4 text-[#0E5C36]" />}
@@ -573,7 +574,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               id="btn-nav-user-settings"
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              title="Configuración de Cuenta"
+              title={t.nav.settings}
               className={`p-1.5 sm:px-3 sm:py-1.5 rounded-full border transition-all flex items-center gap-2 cursor-pointer shadow-sm ${
                 currentView === 'configuracion'
                   ? 'bg-[#0E5C36] border-[#0E5C36] text-white'
@@ -596,7 +597,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
               <span className="hidden lg:inline text-xs font-bold max-w-[100px] truncate">
-                {user?.name ? user.name.split(' ')[0] : 'Perfil'}
+                {user?.name ? user.name.split(' ')[0] : t.nav.profile}
               </span>
               <ChevronDown className="hidden sm:block w-3 h-3 opacity-70" />
             </button>
@@ -620,7 +621,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {user.email}
                   </p>
                   <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#70B873]/20 text-[10px] font-bold text-[#0E5C36] dark:text-[#70B873]">
-                    <Sparkles className="w-3 h-3" /> Racha: {user.streakDays} días
+                    <Sparkles className="w-3 h-3" /> {t.common.streak}: {user.streakDays} {t.common.days}
                   </div>
                 </div>
 
@@ -635,7 +636,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }`}
                   >
                     <Settings className="w-4 h-4 text-emerald-600" />
-                    <span>Configuración de Cuenta</span>
+                    <span>{t.nav.settings}</span>
                   </button>
 
                   <button
@@ -648,7 +649,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     }`}
                   >
                     <User className="w-4 h-4 text-emerald-600" />
-                    <span>Mi Perfil & Biometría</span>
+                    <span>{t.nav.profile}</span>
                   </button>
 
                   <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
@@ -661,7 +662,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="w-full text-left px-3 py-2 text-xs font-bold rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center gap-2.5 transition-colors cursor-pointer"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Cerrar Sesión</span>
+                    <span>{t.nav.logout}</span>
                   </button>
                 </div>
               </div>

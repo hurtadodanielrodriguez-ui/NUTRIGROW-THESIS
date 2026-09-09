@@ -22,7 +22,7 @@ export const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({ isDark
   });
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  const tags = ['Todos', 'Salud Médica', 'Rendimiento', 'Estilo de Vida', 'Gastronomía'];
+  const tags = ['Todos', 'Rendimiento', 'Estilo de Vida', 'Gastronomía'];
 
   const filteredTestimonials = selectedTag === 'Todos'
     ? testimonials

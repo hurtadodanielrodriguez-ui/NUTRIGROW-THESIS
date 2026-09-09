@@ -745,17 +745,6 @@ export const INITIAL_PROJECTS: Project[] = [
 
 export const INITIAL_TESTIMONIALS: Testimonial[] = [
   {
-    id: 'test_1',
-    name: 'Dra. Elena Vasconcelos',
-    role: 'Médico Nutricionista & Investigadora',
-    city: 'Madrid, España',
-    avatar: 'https://images.unsplash.com/photo-1594824813583-294b0d061c56?w=400&auto=format&fit=crop&q=80',
-    comment: 'NutriGrow no es otra app de contar calorías vacías. Integra la alimentación vegetal viva, el autocultivo y la nutrición antiinflamatoria de una manera tan armoniosa y elegante que la recomiendo a todos mis pacientes.',
-    rating: 5,
-    tag: 'Salud Médica',
-    date: 'Hace 3 días'
-  },
-  {
     id: 'test_2',
     name: 'Mateo Sandoval',
     role: 'Triatleta & Diseñador de Producto',

@@ -5,6 +5,7 @@ import {
   Layers, Check
 } from 'lucide-react';
 import { Project, ProjectTask } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 import confetti from 'canvas-confetti';
 
 interface ProjectsViewProps {
@@ -18,6 +19,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
   onUpdateProjects,
   isDark
 }) => {
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newProject, setNewProject] = useState({
@@ -28,7 +30,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
     taskInputs: ['', '', '']
   });
 
-  const categories = ['Todos', 'Cultivo', 'Nutrición', 'Hábitos', 'Meal Prep'];
+  const categories = [
+    { key: 'Todos', label: t.projects.all },
+    { key: 'Cultivo', label: t.projects.categoryCultivo },
+    { key: 'Nutrición', label: t.projects.categoryNutricion },
+    { key: 'Hábitos', label: t.projects.categoryHabitos },
+    { key: 'Meal Prep', label: t.projects.categoryMealPrep }
+  ];
 
   const filteredProjects = selectedCategory === 'Todos'
     ? projects
@@ -132,13 +140,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 bg-[#70B873]/20 text-[#0E5C36] dark:text-[#70B873]">
-            <Sprout className="w-3.5 h-3.5" /> Autocultivo & Hábitos
+            <Sprout className="w-3.5 h-3.5" /> {t.projects.badge}
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold font-display">
-            Mis Proyectos <span className="text-[#0E5C36] dark:text-[#70B873]">NutriGrow</span>
+            {t.projects.title} <span className="text-[#0E5C36] dark:text-[#70B873]">NutriGrow</span>
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">
-            Crea retos, siembra germinados vivos en casa y organiza tus rutinas de cocina saludable.
+            {t.projects.subtitle}
           </p>
         </div>
 
@@ -148,7 +156,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
           className="px-5 py-3 rounded-2xl font-bold text-xs sm:text-sm bg-[#0E5C36] text-white hover:bg-[#16472D] transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20 cursor-pointer self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
-          <span>Crear Nuevo Proyecto</span>
+          <span>{t.projects.newProjectBtn}</span>
         </button>
       </div>
 
@@ -156,17 +164,17 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {categories.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={cat.key}
+            onClick={() => setSelectedCategory(cat.key)}
             className={`px-4 py-2 text-xs sm:text-sm font-bold rounded-2xl transition-all cursor-pointer ${
-              selectedCategory === cat
+              selectedCategory === cat.key
                 ? 'bg-[#0E5C36] text-white shadow-md'
                 : isDark
                 ? 'bg-[#16291E] text-gray-300 hover:bg-[#70B873]/20 border border-[#70B873]/20'
                 : 'bg-white text-gray-700 hover:bg-emerald-50 border border-[#0E5C36]/15'
             }`}
           >
-            {cat}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -193,14 +201,14 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                     </span>
                     {isFinished && (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-black flex items-center gap-1">
-                        <Award className="w-3 h-3" /> ¡Completado!
+                        <Award className="w-3 h-3" /> {t.projects.statusCompleted}
                       </span>
                     )}
                   </div>
 
                   <button
                     onClick={() => handleDeleteProject(project.id)}
-                    title="Eliminar proyecto"
+                    title={t.common.delete}
                     className="text-gray-400 hover:text-red-500 transition-colors p-1"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -218,7 +226,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                 {/* Progress bar */}
                 <div>
                   <div className="flex justify-between items-center text-xs font-bold mb-1.5">
-                    <span className="text-gray-500 dark:text-gray-400">Progreso del Reto</span>
+                    <span className="text-gray-500 dark:text-gray-400">{t.projects.progress}</span>
                     <span className="text-[#0E5C36] dark:text-[#70B873]">{project.progress}%</span>
                   </div>
                   <div className="w-full h-2.5 rounded-full bg-gray-100 dark:bg-[#0D1912] overflow-hidden">
@@ -232,7 +240,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                 {/* Interactive Task Checklist */}
                 <div className="space-y-2 pt-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">
-                    Lista de Tareas ({project.tasks.filter((t) => t.completed).length}/{project.tasks.length})
+                    {t.projects.tasksTitle} ({project.tasks.filter((t) => t.completed).length}/{project.tasks.length})
                   </span>
                   <div className="space-y-2">
                     {project.tasks.map((task) => (
@@ -288,7 +296,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
             }`}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold font-display">Crear Nuevo Proyecto</h3>
+              <h3 className="text-xl font-bold font-display">{t.projects.modalTitle}</h3>
               <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-5 h-5" />
               </button>
@@ -297,14 +305,14 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
             <form onSubmit={handleCreateProject} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider mb-1">
-                  Título del Proyecto *
+                  {t.projects.nameLabel} *
                 </label>
                 <input
                   type="text"
                   required
                   value={newProject.title}
                   onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                  placeholder="Ej. Huerto de Tomates Cherry en Balcón"
+                  placeholder={t.projects.namePlaceholder}
                   className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent outline-none focus:border-[#70B873]"
                 />
               </div>
@@ -312,23 +320,23 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider mb-1">
-                    Categoría
+                    {t.projects.categoryLabel}
                   </label>
                   <select
                     value={newProject.category}
                     onChange={(e) => setNewProject({ ...newProject, category: e.target.value as any })}
                     className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent dark:bg-[#16291E] outline-none"
                   >
-                    <option value="Cultivo">🌱 Cultivo</option>
-                    <option value="Nutrición">🥗 Nutrición</option>
-                    <option value="Hábitos">⚡ Hábitos</option>
-                    <option value="Meal Prep">🍱 Meal Prep</option>
+                    <option value="Cultivo">🌱 {t.projects.categoryCultivo}</option>
+                    <option value="Nutrición">🥗 {t.projects.categoryNutricion}</option>
+                    <option value="Hábitos">⚡ {t.projects.categoryHabitos}</option>
+                    <option value="Meal Prep">🍱 {t.projects.categoryMealPrep}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider mb-1">
-                    Duración Estimada (días)
+                    {t.projects.durationLabel}
                   </label>
                   <input
                     type="number"
@@ -343,20 +351,20 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider mb-1">
-                  Descripción
+                  {t.projects.descLabel}
                 </label>
                 <textarea
                   rows={2}
                   value={newProject.description}
                   onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                  placeholder="¿Cuál es el propósito y beneficio de este proyecto?"
+                  placeholder={t.projects.descPlaceholder}
                   className="w-full p-3 text-sm rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent outline-none focus:border-[#70B873] resize-none"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider mb-1.5">
-                  Tareas Iniciales
+                  {t.projects.tasksLabel}
                 </label>
                 <div className="space-y-2">
                   {newProject.taskInputs.map((taskVal, idx) => (
@@ -369,7 +377,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                         updated[idx] = e.target.value;
                         setNewProject({ ...newProject, taskInputs: updated });
                       }}
-                      placeholder={`Paso ${idx + 1}...`}
+                      placeholder={`${t.projects.taskPlaceholder} ${idx + 1}...`}
                       className="w-full px-3.5 py-2 text-xs rounded-xl border border-gray-300 dark:border-gray-700 bg-transparent outline-none focus:border-[#70B873]"
                     />
                   ))}
@@ -382,13 +390,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
                   onClick={() => setShowAddModal(false)}
                   className="px-4 py-2 text-xs font-semibold rounded-xl border border-gray-300 dark:border-gray-700"
                 >
-                  Cancelar
+                  {t.projects.cancel}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 text-xs font-bold rounded-xl bg-[#0E5C36] text-white hover:bg-[#16472D]"
                 >
-                  Crear Proyecto
+                  {t.projects.submitCreate}
                 </button>
               </div>
             </form>
