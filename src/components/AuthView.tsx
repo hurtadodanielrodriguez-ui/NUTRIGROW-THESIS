@@ -94,8 +94,22 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) {
+    const cleanEmail = loginEmail.trim();
+    const cleanPassword = loginPassword.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!cleanEmail || !cleanPassword) {
       setError('Por favor ingresa tu correo y contraseña.');
+      return;
+    }
+
+    if (!emailRegex.test(cleanEmail)) {
+      setError('Por favor ingresa un formato de correo electrónico válido.');
+      return;
+    }
+
+    if (cleanPassword.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
       return;
     }
 
@@ -113,7 +127,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
         });
       } catch {}
 
-      const rawUserPart = loginEmail.split('@')[0] || 'Miembro NutriGrow';
+      const rawUserPart = cleanEmail.split('@')[0] || 'Miembro NutriGrow';
       const formattedName = rawUserPart
         .replace(/[._-]/g, ' ')
         .split(' ')
@@ -123,7 +137,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       const user: UserProfile = {
         id: 'usr_' + Date.now(),
         name: formattedName,
-        email: loginEmail,
+        email: cleanEmail,
         avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80',
         bio: 'Buscando el balance perfecto entre nutrición viva, recetas deliciosas y energía vital diaria.',
         goal: 'salud_integral',
@@ -155,10 +169,26 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!regName.trim() || !regEmail.trim() || !regPassword.trim()) {
-      setError('Por favor completa todos los campos para tu registro.');
+    const cleanName = regName.trim();
+    const cleanEmail = regEmail.trim();
+    const cleanPassword = regPassword.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!cleanName || !cleanEmail || !cleanPassword) {
+      setError('Por favor completa todos los campos obligatorios para tu registro.');
       return;
     }
+
+    if (!emailRegex.test(cleanEmail)) {
+      setError('Por favor ingresa un correo electrónico válido con formato nombre@dominio.com.');
+      return;
+    }
+
+    if (cleanPassword.length < 6) {
+      setError('La contraseña debe contener al menos 6 caracteres.');
+      return;
+    }
+
     if (!termsAccepted) {
       setError('Por favor acepta las políticas de nutrición y privacidad.');
       return;
@@ -180,8 +210,8 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
       const newUser: UserProfile = {
         id: 'usr_' + Date.now(),
-        name: regName,
-        email: regEmail,
+        name: cleanName,
+        email: cleanEmail,
         avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=80',
         bio: `Nuevo miembro en NutriGrow enfocado en ${regGoal.replace('_', ' ')}.`,
         goal: regGoal,
